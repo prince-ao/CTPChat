@@ -16,14 +16,5 @@ const config: Config = {
     },
   },
   plugins: [],
-
-  "files.associations": {
-    "*.css": "tailwindcss"
-  },
-
-  "editor.quickSuggestions": {
-    "strings": "on"
-  },
-  
 }
 export default config
