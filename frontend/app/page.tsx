@@ -1,8 +1,21 @@
+'use client';
 import * as React from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button";
-import { Lilita_One } from "next/font/google";
+import {
+  Lilita_One, Noto_Sans_Display, Paytone_One, 
+  } from "next/font/google";
+import { LogIn } from "lucide-react";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 
 const lilita_one = Lilita_One({
   style: "normal",
@@ -10,7 +23,21 @@ const lilita_one = Lilita_One({
   subsets: ["latin"],
 });
 
+const paytone_one = Paytone_One({
+  style: "normal",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const noto_sans_display = Noto_Sans_Display({
+  style: "normal",
+  weight: "600",
+  subsets: ["latin"],
+});
+
 export default function Home() {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh]">
       <nav className="flex items-center justify-center h-[75px]">
@@ -29,19 +56,30 @@ export default function Home() {
           </div>
 
           <div className="flex gap-2">
-            <a href="/login">
-              <Button>Log in</Button>
-            </a>
-            <a href="/signup">
-              <Button>Sign up</Button>
-            </a>
+          <Button type="button" onClick={() => {
+            router.push('/login');
+          }}>
+            Sign Up
+          </Button>
+
+          <Button type="button" onClick={() => {
+            router.push('/login');
+            }}>
+            Login
+          </Button>
+
           </div>
         </div>
       </nav>
 
-      <div className="w-[100vw] h-[100vh] text-center">
-        <h1 className="text-7xl font-bold">Welcome to CTPChat!</h1>
-        <h2>Exclusive Open Source Career Tech Prep Communications Platform</h2>
+      {/* w-[100vw] h-[100vh] to align this div to the top instead of center of the page.*/}
+      <div className=" justify-center items-center text-center align-middle">
+        <h1 className={paytone_one.className + " text-7xl "}>
+          Welcome to <span className="text-blue-600">CTP</span>Chat!
+          </h1>
+        <h2 className={noto_sans_display.className + " text-base "}>
+          Exclusive Open Source Career Tech Prep Communications Platform
+          </h2>
       </div>
 
       <div className="w-[100vw] text-center bg-neutral-300">
