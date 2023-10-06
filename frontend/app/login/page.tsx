@@ -53,13 +53,14 @@ export default function Login() {
 
   return (
     <div className=" flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
-      <Tabs defaultValue="sign-up" className="w-[400px]">
+      <Tabs defaultValue="sign-up" className="w-[400px]"> {/* Research how to change defaultValue if possible */}
 
       <TabsList className="grid w-full grid-cols-2 bg-sky-100">
         <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
         <TabsTrigger value="login">Login</TabsTrigger>
       </TabsList>
 
+      {/* Sign up Tab */}
       <TabsContent value="sign-up">
         <Card className="bg-blue-200">
           <CardHeader>
@@ -110,6 +111,7 @@ export default function Login() {
         </Card>
       </TabsContent>
 
+      {/* Login Tab */}
       <TabsContent value="login">
         <Card className="bg-blue-200">
           <CardHeader>
