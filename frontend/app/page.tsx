@@ -1,21 +1,14 @@
-'use client';
+/*
+'use client'
 import * as React from "react";
-import { useState } from "react";
+import { useRouter } from 'next/navigation';
+*/
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
-import { usePathname, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button";
 import {
   Lilita_One, Noto_Sans_Display, Paytone_One, 
   } from "next/font/google";
-import { LogIn } from "lucide-react";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
 
 const lilita_one = Lilita_One({
   style: "normal",
@@ -36,10 +29,10 @@ const noto_sans_display = Noto_Sans_Display({
 });
 
 export default function Home() {
-  const router = useRouter();
+  //const router = useRouter();
 
   return (
-    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh]">
+    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-200 via-sky-100 to-neutral-50">
       <nav className="flex items-center justify-center h-[75px]">
         <div className="w-[80%] flex items-center justify-between">
           <div className="flex items-center gap-6">
@@ -56,17 +49,29 @@ export default function Home() {
           </div>
 
           <div className="flex gap-2">
-          <Button type="button" onClick={() => {
-            router.push('/login');
-          }}>
-            Sign Up
-          </Button>
-
-          <Button type="button" onClick={() => {
-            router.push('/login');
+            {/*
+            Changing default value of Shadcn Tab in child directory page.tsx file via Shadcn buttons proved too difficult.
+            Either have the user click one button that goes to login page
+            Or have two buttons that goes to seperate pages, a sign up page and a login page.
+            */
+           
+            /*
+            <Button type="button" onClick={() => {
+              router.push('/login?value=sign-up');
             }}>
-            Login
-          </Button>
+              Sign Up
+            </Button>
+
+            <Button type="button" onClick={() => {
+              router.push('/login?value=login');
+              }}>
+              Login
+            </Button>
+            */}
+
+            <Button type="button" asChild>
+              <Link href="/login" prefetch={true}>Sign Up / Login</Link>
+            </Button>
 
           </div>
         </div>
@@ -84,27 +89,16 @@ export default function Home() {
 
       <div className="w-[100vw] text-center bg-neutral-300">
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
-          <Link href="/about">About</Link>
-          <Link href="/privacyPolicy">Privacy Policy</Link>
-          <Link href="/termsOfService">Terms of Service</Link>
+          <Link href="/about" prefetch={true}>About</Link>
+          <Link href="/privacypolicy" prefetch={true}>Privacy Policy</Link>
+          <Link href="/termsofservice" prefetch={true}>Terms of Service</Link>
         </div>
 
         <div className="content-center">
-          <small>&copy; MIT License</small>
+          {/*Link to our license.md once we have created our license*/}
+          <small><Link href="https://opensource.org/license/mit/" prefetch={false}>&copy; MIT License</Link></small>
         </div>
       </div>
     </div>
   );
 }
-
-/*
-export default function Home() {
-  return (
-    <main className=" bg-blue-500">
-
-      <Button><Link href="/login" className="align-self-center">Sign Up/Login</Link></Button>
-
-    </main>
-  )
-}
-*/
