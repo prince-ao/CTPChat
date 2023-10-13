@@ -10,6 +10,7 @@
     "email": "string",
     "first_name": "string",
     "last_name": "string",
+    "middle_name": "string",
     "grad_year": "string",
     "password": "string"
   }
@@ -61,7 +62,7 @@ Set-Cookie: (xrt59z) -> (token)
 }
 ```
 
-### GET /api/auth/isloggedin
+### GET /api/auth/is-logged-in
 
 `200` response:
 

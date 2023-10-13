@@ -1,4 +1,4 @@
-CREATE TABLE channel(
+CREATE TABLE channels (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     channel_name VARCHAR(50) NOT NULL,
     created_at TIMESTAMP NOT NULL
