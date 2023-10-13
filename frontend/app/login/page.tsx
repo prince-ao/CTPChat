@@ -1,5 +1,4 @@
-"use client";
-
+'use client'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -30,9 +29,22 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs"
 
-//Account registration
+//Account registration: https://help.pearsoncmg.com/rumba/b2c_self_reg/en/Content/b2c_signin_guidelines.html
+//Zod Documentation: https://zod.dev/?id=strings
 const formSchema = z.object({
-  email: z.string().min(2).email({ message: "Must enter a valid email" }),
+  email: z.string().min(2).email({ message: "You must enter a valid email" }),
+  displayName: z.string()
+  .min(2, { message: "Display name must be at least 2 characters long"})
+  .max(50, { message: "Display name must not exceed 50 characters long"}),
+  surname: z.string().min(1, { message: "Your surname must have at least 1 character"}),
+  middleName: z.string().min(1, { message: "Your middle name must have at least 1 character"}),
+  givenName: z.string().min(1, { message: "Your given name must have at least 1 character"}),
+  newPassword: z
+    .string()
+    .min(6, { message: "password length must be greater then 6" }),
+  confirmPassword: z
+  .string()
+  .min(6, { message: "password length must be greater then 6" }),
   password: z
     .string()
     .min(6, { message: "password length must be greater then 6" }),
@@ -43,7 +55,12 @@ export default function Login() {
     resolver: zodResolver(formSchema as any),
     defaultValues: {
       email: "",
-      password: "",
+      displayName: "",
+      surname: "",
+      middleName: "",
+      givenName: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
@@ -52,8 +69,10 @@ export default function Login() {
   }
 
   return (
-    <div className=" flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
-      <Tabs defaultValue="sign-up" className="w-[400px]"> {/* Research how to change defaultValue if possible */}
+    <div className="
+     flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700
+     ">
+      <Tabs defaultValue="sign-up" className="w-[400px]"> {/*May change to vw to account for mobile.*/}
 
       <TabsList className="grid w-full grid-cols-2 bg-sky-100">
         <TabsTrigger value="sign-up">Sign Up</TabsTrigger>
@@ -69,10 +88,10 @@ export default function Login() {
               Register yourself as a new user. 
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className=" space-y-2">
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-8">
               <FormField
                 control={form.control}
                 name="email"
@@ -80,7 +99,7 @@ export default function Login() {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="email..." {...field} />
+                      <Input type="email" placeholder="Email..." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -88,14 +107,101 @@ export default function Login() {
               />
               <FormField
                 control={form.control}
-                name="password"
+                name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Display Name</FormLabel>
                     <FormControl>
                       <Input
-                        type="password"
-                        placeholder="password..."
+                        type="displayName"
+                        placeholder="Enter a display name for CTPChat"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {/*
+              <FormField
+                control={form.control}
+                name="surname"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Surname</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="surname"
+                        placeholder="Please enter your surname"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="middleName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Middle Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="middleName"
+                        placeholder="Please enter your middle name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="givenName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Given Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="givenName"
+                        placeholder="Please enter your given name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+                */}
+              <FormField
+                control={form.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="newPassword"
+                        placeholder="Enter A New Password..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="confirmPassword"
+                        placeholder="Confirm Your Password..."
                         {...field}
                       />
                     </FormControl>
@@ -166,52 +272,4 @@ export default function Login() {
     </div>
   )
 
-  /*
-  return (
-    <main className="flex items-center justify-center min-h-[100vh]">
-      <Card className="w-[50%]">
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
-        </CardHeader>
-        <CardContent className="">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="email..." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="password..."
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit">Submit</Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </main>
-  );
-  */
 }
