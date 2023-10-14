@@ -1,10 +1,12 @@
 import { Elysia, t } from "elysia";
 import { postgresPool, redisClient } from "./db";
 import { v4 as uuidv4 } from "uuid";
+import { cors } from "@elysiajs/cors";
 
 const PORT = 8008;
 
 const app = new Elysia()
+  .use(cors())
   .get("/", () => "Welcome to the CTPChat API")
   .group("/v1", (app) =>
     app.group("/auth", (app) =>
@@ -28,17 +30,14 @@ const app = new Elysia()
               ["student"]
             );
 
-            console.log(role);
-
             const result = await postgresPool.query(
-              "INSERT INTO users(email, first_name, last_name, middle_name, password, grad_year, user_hash, role_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING email, first_name, last_name",
+              "INSERT INTO users(email, first_name, last_name, middle_name, password, user_hash, role_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING email, first_name, last_name",
               [
                 body.email,
                 body.first_name,
                 body.last_name,
                 body.middle_name,
                 password_hash,
-                body.grad_year,
                 user_hash,
                 role.rows[0].id,
                 new Date(),
@@ -58,7 +57,6 @@ const app = new Elysia()
               first_name: t.String(),
               middle_name: t.Optional(t.String()),
               last_name: t.String(),
-              grad_year: t.Optional(t.String()),
               password: t.String(),
             }),
           }
@@ -71,8 +69,10 @@ const app = new Elysia()
               [body.email]
             );
 
-            if (password_result.rows.length !== 0)
+            if (password_result.rows.length === 0)
               throw new Error("User does not exist, please sign up");
+
+            console.log(body.password, password_result.rows[0]);
 
             if (
               await Bun.password.verify(body.password, password_result.rows[0])

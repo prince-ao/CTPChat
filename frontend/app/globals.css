@@ -64,6 +64,13 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
+
+  @font-face {
+    font-family: "lilita-one";
+    src: url("/fonts/lilita_one/LilitaOne-Regular.ttf");
+    font-weight: normal;
+  }
+
   body {
     font-family: "-apple-system", "Segoe UI", "Roboto", Helvetica, Arial,
       sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
