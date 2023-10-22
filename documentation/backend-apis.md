@@ -63,6 +63,14 @@ Set-Cookie: (xrt59z) -> (token)
 
 ### GET /api/auth/is-logged-in
 
+```json
+{
+  "body": {
+    "uuid": "string"
+  }
+}
+```
+
 `200` response:
 
 ```

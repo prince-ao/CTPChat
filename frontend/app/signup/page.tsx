@@ -14,11 +14,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().min(2).email({ message: "Your email is not valid" }),
-  first_name: z.string().nonempty({ message: "first name is required" }),
-  last_name: z.string().nonempty({ message: "last name is required" }),
+  first_name: z.string(),
+  last_name: z.string(),
   middle_name: z.string().optional(),
   password: z
     .string()
@@ -29,16 +31,17 @@ export default function Signup() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema as any),
   });
+  const [error, setError] = useState("");
 
   const router = useRouter();
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     form.setValue("email", "");
     form.setValue("first_name", "");
     form.setValue("last_name", "");
     form.setValue("middle_name", "");
     form.setValue("password", "");
 
-    fetch("http://localhost:8008/v1/auth/signup", {
+    const result = await fetch("http://localhost:8008/v1/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,16 +55,21 @@ export default function Signup() {
       }),
     });
 
-    router.push("/");
+    if (result.status < 300) {
+      const response_json = await result.json();
+      localStorage.setItem("uuid", response_json.message);
+      router.push("/");
+    } else setError(await result.text());
   }
 
   return (
     <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
       <Card className="bg-blue-200 w-[20%]">
         <CardHeader className="pb-[40px]">
-          <CardTitle>Login</CardTitle>
+          <CardTitle>Sign up</CardTitle>
         </CardHeader>
         <CardContent>
+          {error === "" ? <></> : <p className="text-red-600">{error}</p>}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -153,6 +161,12 @@ export default function Signup() {
                   </FormItem>
                 )}
               />
+              <p className="!mt-2">
+                Have an account?{" "}
+                <Link href="/login" className="text-blue-600">
+                  Log in
+                </Link>
+              </p>
               <div>
                 <Button type="submit">Sign up</Button>
               </div>
