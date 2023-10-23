@@ -52,7 +52,7 @@ export default function Signup() {
       }),
     });
 
-    router.push("/");
+    router.push("/"); //router.push("/home");
   }
 
   return (
