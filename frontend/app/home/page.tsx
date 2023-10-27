@@ -73,11 +73,37 @@ import {
   import { Label } from "@/components/ui/label";
   import { MenuSquare } from 'lucide-react';
 
-
     function DivElement({ message }: { message: string }) {
+
+        const currentTime = new Date().toLocaleTimeString();
+
         return (
             <div key={crypto.randomUUID()} className="border border-[#A3A3A3] bg-inheret text-slate-200 p-1">
-                {message}
+                
+                <div className='flex items-center justify-start w-full h-auto'>
+                    
+                    <div>
+                        <Avatar>
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                    </div>
+
+                    <div className='px-3'>
+                        <h6>Lorem Ipsum</h6>
+                    </div>
+
+                    <div>
+                        <h6 className='text-gray-500'>{currentTime}</h6>
+                    </div>
+
+                </div>
+
+                
+
+                <div className='w-full h-auto whitespace-normal break-words pl-[11.5%]'>
+                    {message}
+                </div>
             </div>
         );
     }
@@ -93,8 +119,8 @@ export default function Home() {
             .min(1, {
             message: "Textarea must be at least 1 characters.",
             })
-            .max(700, {
-            message: "Textarea must not be longer than 700 characters.",
+            .max(1600, {
+            message: "Textarea must not be longer than 1600 characters.",
             })
     });
 
@@ -129,14 +155,14 @@ export default function Home() {
                             <AccordionItem value="item-1">
                                 <AccordionTrigger>Channels</AccordionTrigger>
                                 <AccordionContent>
-                                    <Button className="w-full justify-start"># Class</Button>
+                                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200"># Class</Button>
                                 </AccordionContent>
                             </AccordionItem>
 
                             <AccordionItem value="item-2">
                                 <AccordionTrigger>Direct Messages (DMs)</AccordionTrigger>
                                 <AccordionContent>
-                                    <Button className="w-full justify-start">
+                                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
                                         <div>
                                             <Avatar>
                                                 <AvatarImage src="https://is.gd/az39r7" alt="@shadcn" />
@@ -150,7 +176,7 @@ export default function Home() {
                                         </div>
                                     </Button>
 
-                                    <Button className="w-full justify-start">
+                                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
                                         <div>
                                             <Avatar>
                                                 <AvatarImage src="https://is.gd/jUG71g" alt="@shadcn" />
@@ -209,7 +235,11 @@ export default function Home() {
                                 <Tabs defaultValue="myaccount" className='flex h-[100vh] border border-red-800'>
 
                                     <div id="tabsList" className="w-fit h-full border border-red-500">
-                                        <TabsList className="grid w-[20vw] h-[50vh] grid-row-3">
+                                        <TabsList className="grid grid-row-3
+                                         w-[20vw] h-auto
+                                         justify-normal 
+                                         bg-[#16337D] text-slate-200"
+                                         >
                                             <TabsTrigger value="myaccount">My Account</TabsTrigger>
                                             <TabsTrigger value="profile">Profile</TabsTrigger>
                                             <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
@@ -218,74 +248,54 @@ export default function Home() {
 
                                     <div id="tabsContent" className=" w-full h-full border border-green-500">
                                         <TabsContent value="myaccount" className="w-full h-full m-0">
-                                            <Card className='w-full h-full bg-slate-100'>
-                                            <CardHeader>
+                                            <Card className='w-full h-full bg-[#082261] text-slate-200'>
+
                                                 <CardTitle>My Account</CardTitle>
-                                                <CardDescription>
-                                                Make changes to your account here. Click save when you're done.
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="space-y-2">
-                                                <div className="space-y-1">
-                                                <Label htmlFor="name">Name</Label>
-                                                <Input id="name" defaultValue="Pedro Duarte" />
+
+                                                <div>
+                                                    <div>
+                                                        <Avatar>
+                                                            <AvatarImage src="https://github.com/shadcn.png" />
+                                                            <AvatarFallback>CN</AvatarFallback>
+                                                        </Avatar>
+                                                    </div>
+
+                                                    <div>Lorem Ipsum</div>
+
+                                                    <div>
+                                                        <Button>Edit</Button>
+                                                    </div>
+                                                    
                                                 </div>
-                                                <div className="space-y-1">
-                                                <Label htmlFor="username">Username</Label>
-                                                <Input id="username" defaultValue="@peduarte" />
+
+                                                <div>
+
+                                                    <div>
+                                                        <p>Role: Student</p>
+
+                                                        <p>Phone number: 000-000-000</p>
+
+                                                        <p>Email: email@email.com</p>
+                                                    </div>
+
+                                                    <div>
+                                                        <Button>Edit</Button>
+                                                    </div>
+                                                    
                                                 </div>
-                                            </CardContent>
-                                            <CardFooter>
-                                                <Button>Save changes</Button>
-                                            </CardFooter>
+                                            
                                             </Card>
                                         </TabsContent>
 
                                         <TabsContent value="profile" className="w-full h-full m-0">
-                                            <Card className='w-full h-full bg-slate-100'>
-                                            <CardHeader>
-                                                <CardTitle>Profile</CardTitle>
-                                                <CardDescription>
-                                                Change your profile here.
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="space-y-2">
-                                                <div className="space-y-1">
-                                                <Label htmlFor="current">Current password</Label>
-                                                <Input id="current" type="password" />
-                                                </div>
-                                                <div className="space-y-1">
-                                                <Label htmlFor="new">New password</Label>
-                                                <Input id="new" type="password" />
-                                                </div>
-                                            </CardContent>
-                                            <CardFooter>
-                                                <Button>Save password</Button>
-                                            </CardFooter>
+                                            <Card className='w-full h-full bg-[#082261] text-slate-200'>
+                                            
                                             </Card>
                                         </TabsContent>
 
                                         <TabsContent value="adjustments" className="w-full h-full m-0">
-                                            <Card className='w-full h-full bg-slate-100'>
-                                            <CardHeader>
-                                                <CardTitle>Adjustments</CardTitle>
-                                                <CardDescription>
-                                                Adjust in-website settings here.
-                                                </CardDescription>
-                                            </CardHeader>
-                                            <CardContent className="space-y-2">
-                                                <div className="space-y-1">
-                                                <Label htmlFor="current">Current password</Label>
-                                                <Input id="current" type="password" />
-                                                </div>
-                                                <div className="space-y-1">
-                                                <Label htmlFor="new">New password</Label>
-                                                <Input id="new" type="password" />
-                                                </div>
-                                            </CardContent>
-                                            <CardFooter>
-                                                <Button>Save password</Button>
-                                            </CardFooter>
+                                            <Card className='w-full h-full bg-[#082261] text-slate-200'>
+                                           
                                             </Card>
                                         </TabsContent>
 
@@ -509,7 +519,7 @@ export default function Home() {
                         <div id="textContainer" className="w-[100vh]">
                           
                           <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-stretch w-full">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-stretch w-full overflow-hidden">
                               <FormField
                                 control={form.control}
                                 name="chatbox"
@@ -522,6 +532,7 @@ export default function Home() {
 
                                       {/* When Textarea is focused && ...field https://scrimba.com/articles/react-spread-operator/*/}
                                       <Textarea
+                                        required 
                                         placeholder="Type..."
                                         className="min-h-fit
                                         resize-none rounded-lg
