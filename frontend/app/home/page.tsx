@@ -114,18 +114,16 @@ export default function Home() {
 
     /*Message expands textarea past div height*/
     const FormSchema = z.object({
-        chatbox: z
-            .string()
-            .min(1, {
-            message: "Textarea must be at least 1 characters.",
-            })
-            .max(1600, {
-            message: "Textarea must not be longer than 1600 characters.",
-            })
+    //No need for validation as shadcn textarea `required` property does not allow empty messages to be submitted. 
+    chatbox: z
+        .string() //Fixed Zod error messages popping up underneath Shadcn textarea.
     });
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
+        defaultValues: {
+            chatbox: "",
+          },
     });
 
     //Be careful of React state pitfall: https://is.gd/NLwCfG
@@ -232,9 +230,9 @@ export default function Home() {
                             </DialogTrigger>
 
                             <DialogContent className="max-w-full w-full h-full bg-[#0D2257]/90 text-slate-200">
-                                <Tabs defaultValue="myaccount" className='flex h-[100vh] border border-red-800'>
+                                <Tabs defaultValue="myaccount" className='flex h-[100vh] w-[95vw]'>
 
-                                    <div id="tabsList" className="w-fit h-full border border-red-500">
+                                    <div id="tabsList" className="w-fit h-full border border-[#9CB3E3] rounded-md">
                                         <TabsList className="grid grid-row-3
                                          w-[20vw] h-auto
                                          justify-normal 
@@ -246,42 +244,77 @@ export default function Home() {
                                         </TabsList>
                                     </div>
 
-                                    <div id="tabsContent" className=" w-full h-full border border-green-500">
+                                    <div id="tabsContent" className=" w-full h-full">
                                         <TabsContent value="myaccount" className="w-full h-full m-0">
                                             <Card className='w-full h-full bg-[#082261] text-slate-200'>
 
                                                 <CardTitle>My Account</CardTitle>
 
-                                                <div>
-                                                    <div>
-                                                        <Avatar>
-                                                            <AvatarImage src="https://github.com/shadcn.png" />
-                                                            <AvatarFallback>CN</AvatarFallback>
-                                                        </Avatar>
+                                                <div className='bg-teal-700'>
+                                                    {/*Make map of repeatable code in future*/}
+                                                    <div className='flex justify-between items-center w-full h-aut'>
+                                                        <div className='flex justify-start items-center'>
+                                                            <Avatar>
+                                                                <AvatarImage src="https://github.com/shadcn.png" />
+                                                                <AvatarFallback>CN</AvatarFallback>
+                                                            </Avatar>
+
+                                                            <h6>Lorem Ipsum</h6>
+                                                        </div>
+
+                                                        <div>
+                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                        </div>
+
                                                     </div>
 
-                                                    <div>Lorem Ipsum</div>
+                                                    <div className='flex justify-between items-center w-full h-auto'>
+                                                        <div className='flex justify-start items-center'>
 
-                                                    <div>
-                                                        <Button>Edit</Button>
+                                                            <h6 className='mr-1'>Role:</h6>
+                                                            <h6>Student</h6>
+                                                        </div>
+
+                                                        <div>
+                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                        </div>
+
                                                     </div>
-                                                    
+
+                                                    <div className='flex justify-between items-center w-full h-auto'>
+                                                        <div className='flex justify-start items-center'>
+
+                                                            <h6 className='mr-1'>Phone Number:</h6>
+                                                            <h6>###-###-####</h6>
+                                                        </div>
+
+                                                        <div>
+                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div className='flex justify-between items-center w-full h-auto'>
+                                                        <div className='flex justify-start items-center'>
+
+                                                            <h6 className='mr-1'>Email:</h6>
+                                                            <h6>Anon@email.com</h6>
+                                                        </div>
+
+                                                        <div>
+                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                        </div>
+
+                                                    </div>
                                                 </div>
 
-                                                <div>
+                                                <div className="flex w-full max-w-sm items-center space-x-2 my-[5px]">
+                                                    <Button type="submit">Change Password</Button>
+                                                    <Input type="changePassword" placeholder="password" />
+                                                </div>
 
-                                                    <div>
-                                                        <p>Role: Student</p>
-
-                                                        <p>Phone number: 000-000-000</p>
-
-                                                        <p>Email: email@email.com</p>
-                                                    </div>
-
-                                                    <div>
-                                                        <Button>Edit</Button>
-                                                    </div>
-                                                    
+                                                <div className='w-full h-auto my-60'>
+                                                    <Button className='bg-red-600'>Delete Account</Button>
                                                 </div>
                                             
                                             </Card>
@@ -289,13 +322,114 @@ export default function Home() {
 
                                         <TabsContent value="profile" className="w-full h-full m-0">
                                             <Card className='w-full h-full bg-[#082261] text-slate-200'>
+
+                                            <CardTitle>Profile</CardTitle>
+
+                                            <div className='flex justify-center items-center w-full h-aut'>
+                                                <div>
+                                                    <Avatar>
+                                                        <AvatarImage src="https://github.com/shadcn.png" />
+                                                        <AvatarFallback>CN</AvatarFallback>
+                                                    </Avatar>
+
+                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                </div>
+
+                                            </div>
+
+                                            <div className='flex justify-between items-center w-full h-auto'>
+                                                <div className='flex justify-start items-center'>
+
+                                                    <h6 className='mr-1'>Role:</h6>
+                                                    <h6>Student</h6>
+                                                </div>
+
+                                                <div>
+                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                </div>
+
+                                            </div>
+
+                                            <div className='flex justify-between items-center w-full h-auto'>
+                                                <div className='flex justify-start items-center'>
+
+                                                    <h6 className='mr-1'>Pronouns:</h6>
+                                                    <h6>He/Her/They</h6>
+                                                </div>
+
+                                                <div>
+                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                </div>
+
+                                            </div>
+
+                                            <div className='flex justify-between items-center w-full h-auto'>
+                                                <div className='flex justify-start items-center'>
+
+                                                    <h6 className='mr-1'>First Name:</h6>
+                                                    <h6>Anon</h6>
+                                                </div>
+
+                                                <div>
+                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                </div>
+
+                                            </div>
+
+                                            <div className='flex justify-between items-center w-full h-auto'>
+                                                <div className='flex justify-start items-center'>
+
+                                                    <h6 className='mr-1'>Last Name:</h6>
+                                                    <h6>Anon</h6>
+                                                </div>
+
+                                                <div>
+                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                </div>
+
+                                            </div>
+
+                                            <div className='flex justify-between items-center w-full h-auto'>
+                                                <div className='flex justify-start items-center'>
+
+                                                    <h6 className='mr-1'>Phone Number:</h6>
+                                                    <h6>###-###-####</h6>
+                                                </div>
+
+                                                <div>
+                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                </div>
+
+                                            </div>
+
+                                            <div className='flex justify-between items-center w-full h-auto'>
+                                                <div className='flex justify-start items-center'>
+
+                                                    <h6 className='mr-1'>Email:</h6>
+                                                    <h6>Anon@email.com</h6>
+                                                </div>
+
+                                                <div>
+                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                                                </div>
+
+                                            </div>
                                             
                                             </Card>
                                         </TabsContent>
 
                                         <TabsContent value="adjustments" className="w-full h-full m-0">
                                             <Card className='w-full h-full bg-[#082261] text-slate-200'>
-                                           
+
+                                            <CardTitle>Adjustments</CardTitle>
+
+                                            <h1>Audio: </h1>
+                                            <Button>Change Audio</Button>
+
+                                            <h1>Background Color: </h1>
+
+                                            <Button>Change Background Color</Button>
+
                                             </Card>
                                         </TabsContent>
 
