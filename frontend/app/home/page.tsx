@@ -251,6 +251,7 @@ export default function Home() {
                                                 <CardTitle>My Account</CardTitle>
 
                                                 <div className='bg-teal-700'>
+                                                    
                                                     {/*Make map of repeatable code in future*/}
                                                     <div className='flex justify-between items-center w-full h-aut'>
                                                         <div className='flex justify-start items-center'>
