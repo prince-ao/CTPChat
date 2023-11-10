@@ -13,7 +13,7 @@ import {
 
 export default function TermsOfService() {
   return (
-    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh]">
+    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh] overflow-x-hidden">
       <nav className="flex items-center justify-center h-[75px]">
         <div className="w-[80%] flex items-center justify-between">
 
@@ -50,10 +50,10 @@ export default function TermsOfService() {
         </div>
       </nav>
 
-      <div className="w-full h-auto whitespace-normal break-words">
-        <h1>Website Terms and Conditions of Use</h1>
+      <div className="w-full h-auto px-5 whitespace-normal break-words">
+        <h1 className="text-xl font-semibold">Website Terms and Conditions of Use</h1>
 
-        <h2>1. Terms</h2>
+        <h2 className="text-lg font-semibold">1. Terms</h2>
 
         <p>
             By accessing this Website, accessible from www.ctpchat.com,
@@ -63,7 +63,7 @@ export default function TermsOfService() {
             The materials contained in this Website are protected by copyright and trade mark law.
         </p>
 
-        <h2>2. Use License</h2>
+        <h2 className="text-lg font-semibold">2. Use License</h2>
 
         <p>
             Permission is granted to temporarily download one copy of the materials on CTPChat's Website for personal, 
@@ -84,10 +84,10 @@ export default function TermsOfService() {
             Upon termination, your viewing right will also be terminated and you should destroy any downloaded materials 
             in your possession whether it is printed or electronic format. 
             These Terms of Service has been created with the help of the 
-            <Button variant="link"><Link href="https://www.termsofservicegenerator.net">Terms Of Service Generator</Link></Button>.
+            <Button variant="link" className="h-0 m-0 px-1 py-0"><Link href="https://www.termsofservicegenerator.net">Terms Of Service Generator</Link></Button>.
         </p>
 
-        <h2>3. Disclaimer</h2>
+        <h2 className="text-lg font-semibold">3. Disclaimer</h2>
 
         <p>
             All the materials on CTPChat's Website are provided "as is". 
@@ -96,7 +96,7 @@ export default function TermsOfService() {
             on its Website or otherwise relating to such materials or any sites linked to this Website.
         </p>
 
-        <h2>4. Limitations</h2>
+        <h2 className="text-lg font-semibold">4. Limitations</h2>
 
         <p>
             CTPChat or its suppliers will not be hold accountable for any damages that will arise with the use or 
@@ -107,7 +107,7 @@ export default function TermsOfService() {
             these limitations may not apply to you.
         </p>
 
-        <h2>5. Revisions and Errata</h2>
+        <h2 className="text-lg font-semibold">5. Revisions and Errata</h2>
 
         <p>
             The materials appearing on CTPChat's Website may include technical, typographical, or photographic errors. 
@@ -116,7 +116,7 @@ export default function TermsOfService() {
             CTPChat does not make any commitment to update the materials.
         </p>
 
-        <h2>6. Links</h2>
+        <h2 className="text-lg font-semibold">6. Links</h2>
 
         <p>
             CTPChat has not reviewed all of the sites linked to its Website and is not responsible for the contents of any such linked 
@@ -124,20 +124,20 @@ export default function TermsOfService() {
             The use of any linked website is at the user's own risk.
         </p>
 
-        <h2>7. Site Terms of Use Modifications</h2>
+        <h2 className="text-lg font-semibold">7. Site Terms of Use Modifications</h2>
 
         <p>
             CTPChat may revise these Terms of Use for its Website at any time without prior notice. 
             By using this Website, you are agreeing to be bound by the current version of these Terms and Conditions of Use.
         </p>
 
-        <h2>8. Your Privacy</h2>
+        <h2 className="text-lg font-semibold">8. Your Privacy</h2>
 
         <p>
             Please read our Privacy Policy.
         </p>
 
-        <h2>9. Governing Law</h2>
+        <h2 className="text-lg font-semibold">9. Governing Law</h2>
 
         <p>
             Any claim related to CTPChat's Website shall be 

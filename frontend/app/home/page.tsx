@@ -73,6 +73,36 @@ import {
   import { Label } from "@/components/ui/label";
   import { MenuSquare } from 'lucide-react';
 
+    function accountInfoDiv(props: {identifier: string, idObject: string}) {
+
+        return (
+            <div className='flex justify-between items-center w-full h-auto'>
+                <div className='flex justify-start items-center'>
+                    <h6 className='mr-1'>{props.identifier}</h6>
+                    <h6>{props.idObject}</h6>
+                </div>
+
+                <div>
+                    <Button variant="link" className='text-blue-300'>Edit</Button>
+                </div>
+            </div>
+        );
+    }
+
+    type Props = {
+        children: JSX.Element;
+    };
+
+    function FormattingElement({ children }: Props) {
+        return (
+            <div>
+                <Toggle aria-label="Toggle italic">
+                    {children}
+                </Toggle>
+            </div>
+        );
+    }
+
     function DivElement({ message }: { message: string }) {
 
         const currentTime = new Date().toLocaleTimeString();
@@ -99,8 +129,6 @@ import {
 
                 </div>
 
-                
-
                 <div className='w-full h-auto whitespace-normal break-words pl-[11.5%]'>
                     {message}
                 </div>
@@ -110,7 +138,7 @@ import {
 
 export default function Home() {
 
-    const [divElements, setDivElements] = useState<JSX.Element[]>([]);
+    const [divElements, setDivElements] = useState<React.JSX.Element[]>([]);
 
     /*Message expands textarea past div height*/
     const FormSchema = z.object({
@@ -134,6 +162,18 @@ export default function Home() {
 
         setDivElements([...divElements, <DivElement message={input} />]);
     }
+
+    /*Text Formatting Symbols*/
+    const boldSymbol = <Bold className="h-4 w-4" />;
+    const italicSymbol = <Italic className="h-4 w-4" />;
+    const underlineSymbol = <Underline className="h-4 w-4" />;
+    const strikethroughSymbol = <Strikethrough className="h-4 w-4" />;
+    const linkSymbol = <Link className="h-4 w-4" />;
+    const listSymbol = <List className="h-4 w-4"/>;
+    const listorderedSymbol = <ListOrdered className="h-4 w-4"/>;
+    const textquoteSymbol = <TextQuote className="h-4 w-4"/>;
+    const code2Symbol = <Code2 className="h-4 w-4"/>;
+    const squarecodeSymbol = <SquareCode className="h-4 w-4"/>;
 
     return (
         <div 
@@ -252,8 +292,8 @@ export default function Home() {
 
                                                 <div className='bg-teal-700'>
                                                     
-                                                    {/*Make map of repeatable code in future*/}
-                                                    <div className='flex justify-between items-center w-full h-aut'>
+                                                    {/*Make map of repeatable code in future Link: https://sl.bing.net/5TNfKtfrsy */}
+                                                    <div className='flex justify-between items-center w-full h-auto'>
                                                         <div className='flex justify-start items-center'>
                                                             <Avatar>
                                                                 <AvatarImage src="https://github.com/shadcn.png" />
@@ -269,44 +309,12 @@ export default function Home() {
 
                                                     </div>
 
-                                                    <div className='flex justify-between items-center w-full h-auto'>
-                                                        <div className='flex justify-start items-center'>
+                                                    {accountInfoDiv({identifier: 'Role:', idObject: 'Student'})}
 
-                                                            <h6 className='mr-1'>Role:</h6>
-                                                            <h6>Student</h6>
-                                                        </div>
+                                                    {accountInfoDiv({identifier: 'Phone Number:', idObject: '###-###-####'})}
 
-                                                        <div>
-                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                        </div>
+                                                    {accountInfoDiv({identifier: 'Email:', idObject: 'Castocired54@cuvox.de'})}
 
-                                                    </div>
-
-                                                    <div className='flex justify-between items-center w-full h-auto'>
-                                                        <div className='flex justify-start items-center'>
-
-                                                            <h6 className='mr-1'>Phone Number:</h6>
-                                                            <h6>###-###-####</h6>
-                                                        </div>
-
-                                                        <div>
-                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                        </div>
-
-                                                    </div>
-
-                                                    <div className='flex justify-between items-center w-full h-auto'>
-                                                        <div className='flex justify-start items-center'>
-
-                                                            <h6 className='mr-1'>Email:</h6>
-                                                            <h6>Anon@email.com</h6>
-                                                        </div>
-
-                                                        <div>
-                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                        </div>
-
-                                                    </div>
                                                 </div>
 
                                                 <div className="flex w-full max-w-sm items-center space-x-2 my-[5px]">
@@ -338,83 +346,17 @@ export default function Home() {
 
                                             </div>
 
-                                            <div className='flex justify-between items-center w-full h-auto'>
-                                                <div className='flex justify-start items-center'>
+                                            {accountInfoDiv({identifier: 'Role:', idObject: 'Student'})}
 
-                                                    <h6 className='mr-1'>Role:</h6>
-                                                    <h6>Student</h6>
-                                                </div>
+                                            {accountInfoDiv({identifier: 'Pronouns:', idObject: 'He/Her/They'})}
 
-                                                <div>
-                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                </div>
+                                            {accountInfoDiv({identifier: 'First Name:', idObject: 'John'})}
 
-                                            </div>
+                                            {accountInfoDiv({identifier: 'Last Name:', idObject: 'Doe'})}
 
-                                            <div className='flex justify-between items-center w-full h-auto'>
-                                                <div className='flex justify-start items-center'>
+                                            {accountInfoDiv({identifier: 'Phone Number:', idObject: '###-###-####'})}
 
-                                                    <h6 className='mr-1'>Pronouns:</h6>
-                                                    <h6>He/Her/They</h6>
-                                                </div>
-
-                                                <div>
-                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                </div>
-
-                                            </div>
-
-                                            <div className='flex justify-between items-center w-full h-auto'>
-                                                <div className='flex justify-start items-center'>
-
-                                                    <h6 className='mr-1'>First Name:</h6>
-                                                    <h6>Anon</h6>
-                                                </div>
-
-                                                <div>
-                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                </div>
-
-                                            </div>
-
-                                            <div className='flex justify-between items-center w-full h-auto'>
-                                                <div className='flex justify-start items-center'>
-
-                                                    <h6 className='mr-1'>Last Name:</h6>
-                                                    <h6>Anon</h6>
-                                                </div>
-
-                                                <div>
-                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                </div>
-
-                                            </div>
-
-                                            <div className='flex justify-between items-center w-full h-auto'>
-                                                <div className='flex justify-start items-center'>
-
-                                                    <h6 className='mr-1'>Phone Number:</h6>
-                                                    <h6>###-###-####</h6>
-                                                </div>
-
-                                                <div>
-                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                </div>
-
-                                            </div>
-
-                                            <div className='flex justify-between items-center w-full h-auto'>
-                                                <div className='flex justify-start items-center'>
-
-                                                    <h6 className='mr-1'>Email:</h6>
-                                                    <h6>Anon@email.com</h6>
-                                                </div>
-
-                                                <div>
-                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                </div>
-
-                                            </div>
+                                            {accountInfoDiv({identifier: 'Email:', idObject: 'Castocired54@cuvox.de'})}
                                             
                                             </Card>
                                         </TabsContent>
@@ -499,75 +441,31 @@ export default function Home() {
 
                             <div className="flex h-5 items-center space-x-1 text-sm">
 
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <Bold className="h-4 w-4" />
-                                    </Toggle>
-                                </div>
-
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <Italic className="h-4 w-4" />
-                                    </Toggle>
-                                </div>
-
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <Underline className="h-4 w-4" />
-                                    </Toggle>
-                                </div>
-
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <Strikethrough className="h-4 w-4" />
-                                    </Toggle>
-                                </div>
+                                <FormattingElement>{boldSymbol}</FormattingElement>
+                                <FormattingElement>{italicSymbol}</FormattingElement>
+                                <FormattingElement>{underlineSymbol}</FormattingElement>
+                                <FormattingElement>{strikethroughSymbol}</FormattingElement>
 
                                 <Separator orientation="vertical" />
 
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <Link className="h-4 w-4" />
-                                    </Toggle>
-                                </div>
+                                <FormattingElement>{linkSymbol}</FormattingElement>
 
                                 <Separator orientation="vertical" />
 
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <List className="h-4 w-4"/>
-                                    </Toggle>
-                                </div>
-
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <ListOrdered className="h-4 w-4"/>
-                                    </Toggle>
-                                </div>
+                                <FormattingElement>{listSymbol}</FormattingElement>
+                                <FormattingElement>{listorderedSymbol}</FormattingElement>
 
                                 <Separator orientation="vertical" />
 
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <TextQuote className="h-4 w-4"/>
-                                    </Toggle>
-                                </div>
+                                <FormattingElement>{textquoteSymbol}</FormattingElement>
 
                                 <Separator orientation="vertical" />
 
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <Code2 className="h-4 w-4"/>
-                                    </Toggle>
-                                </div>
-
-                                <div>
-                                    <Toggle aria-label="Toggle italic">
-                                        <SquareCode className="h-4 w-4"/>
-                                    </Toggle>
-                                </div>
+                                <FormattingElement>{code2Symbol}</FormattingElement>
+                                <FormattingElement>{squarecodeSymbol}</FormattingElement>
 
                                 <Separator orientation="vertical" />
+                                
 
                             </div>
 
