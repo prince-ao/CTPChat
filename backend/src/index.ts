@@ -13,24 +13,29 @@ const app = new Elysia()
       app
         .post(
           "/signup",
-          async ({ body, cookie: { xrt59z } }) => {
+          async ({ body, set, cookie: { xrt59z } }) => {
             const email_result = await postgresPool.query(
               "SELECT email FROM users WHERE email = $1",
               [body.email]
             );
-            if (email_result.rows.length !== 0)
-              throw new Error("User already exists, please login");
+            if (email_result.rows.length !== 0) {
+              set.status = 400;
+              return "User already exists, please login";
+            }
 
             const password_hash = await Bun.password.hash(body.password);
 
+            console.log(body.password);
+
             const user_hash = (Math.random() * 10000).toPrecision(4).toString();
+            console.log(user_hash);
 
             const role = await postgresPool.query(
               "SELECT id FROM roles WHERE role_name = $1",
               ["student"]
             );
 
-            const result = await postgresPool.query(
+            await postgresPool.query(
               "INSERT INTO users(email, first_name, last_name, middle_name, password, user_hash, role_id, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING email, first_name, last_name",
               [
                 body.email,
@@ -46,10 +51,8 @@ const app = new Elysia()
 
             const uuid = uuidv4();
             redisClient.set(uuid, 1);
-            xrt59z.value = uuid;
-            xrt59z.httpOnly = true;
 
-            return { message: "success" };
+            return { message: uuid };
           },
           {
             body: t.Object({
@@ -63,28 +66,31 @@ const app = new Elysia()
         )
         .post(
           "/login",
-          async ({ body, cookie: { xrt59z } }) => {
+          async ({ body, set }) => {
             const password_result = await postgresPool.query(
               "SELECT password FROM users WHERE email = $1",
               [body.email]
             );
 
-            if (password_result.rows.length === 0)
-              throw new Error("User does not exist, please sign up");
-
-            console.log(body.password, password_result.rows[0]);
+            if (password_result.rows.length === 0) {
+              set.status = 400;
+              return "User does not exist, please sign up";
+            }
 
             if (
-              await Bun.password.verify(body.password, password_result.rows[0])
-            )
-              throw new Error("Invalid password");
+              !(await Bun.password.verify(
+                body.password,
+                password_result.rows[0].password
+              ))
+            ) {
+              set.status = 400;
+              return "Invalid password";
+            }
 
             const uuid = uuidv4();
             redisClient.set(uuid, 1);
-            xrt59z.value = uuid;
-            xrt59z.httpOnly = true;
 
-            return { message: "success" };
+            return { message: uuid };
           },
           {
             body: t.Object({
@@ -93,9 +99,17 @@ const app = new Elysia()
             }),
           }
         )
-        .get("/is-logged-in", ({ cookie: { xrt59z } }) => {
-          return xrt59z.value ? "YES" : "NO";
-        })
+        .post(
+          "/is-logged-in",
+          async ({ body }) => {
+            return (await redisClient.get(body.uuid)) === null ? "NO" : "YES";
+          },
+          {
+            body: t.Object({
+              uuid: t.String(),
+            }),
+          }
+        )
     )
   )
   .listen(PORT);
