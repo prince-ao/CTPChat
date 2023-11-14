@@ -32,6 +32,24 @@ export default function Home() {
     })();
   }, []);
   return (
+    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh]">
+      <nav className="flex items-center justify-center h-[75px]">
+        <div className="w-[80%] flex items-center justify-between">
+
+          <a href="/"> {/*To redirect page to itself. User may click just as in about, termsofservice, and privacypolicy pages */}
+            <div className="flex items-center gap-6">
+              <Image
+                src="/ctp-logo-small.png"
+                width={60}
+                height={60}
+                alt="Picture of the author"
+                className="rounded-md"
+              />
+              <h1 className={"font-lilita-one text-5xl"}>
+                <span className="text-blue-600">CTP</span>Chat
+              </h1>
+            </div>
+          </a>
     <>
       {loading ? (
         <></>
@@ -85,6 +103,15 @@ export default function Home() {
                 Terms of Service
               </Link>
             </div>
+
+
+        <div className="content-center">
+          {/*Linked to our GitHub license.md from MIT license page*/}
+          <small>
+            <Link href="https://github.com/prince-ao/CTPChat/blob/52a941732ef22bf62bd9e59133a8ccd9264608ee/LICENSE" prefetch={false}>
+              &copy; MIT License
+            </Link>
+          </small>
 
             <div className="content-center">
               {/*Link to our license.md once we have created our license*/}
