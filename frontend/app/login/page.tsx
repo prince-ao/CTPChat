@@ -14,6 +14,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Link from "next/link";
 
 const formSchema = z.object({
   email: z.string().min(2).email({ message: "Your email is not valid" }),
@@ -26,14 +28,15 @@ export default function Login() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema as any),
   });
+  const [error, setError] = useState("");
 
   const router = useRouter();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     form.setValue("email", "");
     form.setValue("password", "");
 
-    fetch("http://localhost:8008/v1/auth/login", {
+    const result = await fetch("http://localhost:8008/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -43,17 +46,22 @@ export default function Login() {
         password: values.password,
       }),
     });
-
-    router.push("/"); //router.push("/home");
+    
+    if (result.status < 300) {
+      const response_json = await result.json();
+      localStorage.setItem("uuid", response_json.message);
+      router.push("/");
+    } else setError(await result.text());
   }
 
   return (
     <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
       <Card className="bg-blue-200 w-[20%]">
         <CardHeader className="pb-[40px]">
-          <CardTitle>Login</CardTitle>
+          <CardTitle>Log in</CardTitle>
         </CardHeader>
         <CardContent>
+          {error === "" ? <></> : <p className="text-red-600">{error}</p>}
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -86,6 +94,12 @@ export default function Login() {
                   </FormItem>
                 )}
               />
+              <p className="!mt-2">
+                Don't have an account?{" "}
+                <Link href="/signup" className="text-blue-600">
+                  Sign up
+                </Link>
+              </p>
               <div>
                 <Button className="" type="submit">
                   Login
