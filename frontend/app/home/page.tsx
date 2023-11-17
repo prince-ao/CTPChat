@@ -89,6 +89,72 @@ import {
         );
     }
 
+    /*
+    function collapseContainer() {
+        
+        const infoCont = document.getElementById('infoContainer') as HTMLElement;
+        const membCont = document.getElementById('memberContainer') as HTMLElement;
+
+        const chatCont = document.getElementById('chatContainer') as HTMLElement;
+
+        const infoDisplaySetting = getComputedStyle(infoCont).display;
+        const membDisplaySetting = getComputedStyle(membCont).display;
+
+        chatCont.style.width = 'inherit';
+
+        if(infoDisplaySetting == 'block') {
+            infoCont.style.display = 'none';
+        } else {
+            infoCont.style.display = 'block';
+        }
+
+        if(membDisplaySetting == 'block') {
+            membCont.style.display = 'none';
+        } else {
+            membCont.style.display = 'block';
+        }
+
+    }
+    */
+
+    function collapseInfoContainer() {
+        
+        const infoCont = document.getElementById('infoContainer') as HTMLElement;
+
+        const chatCont = document.getElementById('chatContainer') as HTMLElement;
+
+        //const displaySetting = infoCont.style.display;
+        const displaySetting = window.getComputedStyle(infoCont).getPropertyValue('display');
+
+        if(displaySetting == 'block') {
+            infoCont.style.display = 'none';
+        } else {
+            infoCont.style.display = 'block';
+        }
+
+        chatCont.style.width = 'inherit';
+
+    }
+
+    function collapseMemberContainer() {
+        
+        const membCont = document.getElementById('memberContainer') as HTMLElement;
+
+        const chatCont = document.getElementById('chatContainer') as HTMLElement;
+
+        //const displaySetting = infoCont.style.display;
+        const displaySetting = window.getComputedStyle(membCont).getPropertyValue('display');
+
+        if(displaySetting == 'block') {
+            membCont.style.display = 'none';
+        } else {
+            membCont.style.display = 'block';
+        }
+
+        chatCont.style.width = 'inherit';
+
+    }
+
     type Props = {
         children: JSX.Element;
     };
@@ -178,13 +244,13 @@ export default function Home() {
     return (
         <div 
         className="flex items-center justify-center
-        w-[100vw] h-[100vh] 
+        w-screen h-screen
         bg-slate-950 text-slate-200 
         divide-x divide-slate-600 divide-y-0"
         >
 
             {/* overflow-hidden hides the scroll that appears when accordian is clicked */}
-            <div id="infoContainer" className="w-[25vw] h-[100vh] bg-blue-900/75 overflow-hidden">
+            <div id="infoContainer" className="block w-[25vw] h-screen bg-blue-900/75 overflow-hidden">
 
                 <div id="channelContainer" className="h-[90%]">
                     <ScrollArea className="h-full w-full rounded-md">
@@ -270,7 +336,7 @@ export default function Home() {
                             </DialogTrigger>
 
                             <DialogContent className="max-w-full w-full h-full bg-[#0D2257]/90 text-slate-200">
-                                <Tabs defaultValue="myaccount" className='flex h-[100vh] w-[95vw]'>
+                                <Tabs defaultValue="myaccount" className='flex h-screen w-[95vw]'>
 
                                     <div id="tabsList" className="w-fit h-full border border-[#9CB3E3] rounded-md">
                                         <TabsList className="grid grid-row-3
@@ -387,15 +453,21 @@ export default function Home() {
 
             </div>
 
-            <div id="chatContainer" className="w-[50vw] h-[100vh] bg-blue-900/75"> {/*bg-blue-950*/}
+            <div id="chatContainer" className="block min-w-[50vw] w-auto h-screen bg-blue-900/75"> {/*bg-blue-950*/}
 
                 <div id="channelInfoContainer" className="flex items-center justify-between w-auto h-[7vh] bg-indigo-900">
                     <div className="flex items-center justify-start">
 
+                        {/* Button that collapses info container to the left */}
                         <div className="mr-1">
-                            <Button variant="secondary" className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
-                            /*onClick={collapseMembers}*/> 
-                                <MenuSquare /> 
+                            <Button
+                                variant="secondary" 
+                                id="infoContBtn" 
+                                className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
+                                onClick={collapseInfoContainer}
+                                /*onClick={collapseContainer}*/
+                            > 
+                                <MenuSquare />
                             </Button>
                         </div>
 
@@ -413,9 +485,15 @@ export default function Home() {
 
                     </div>
 
+                    {/* Button that collapses members container to the right */}
                     <div className="mr-1">
-                        <Button variant="secondary" className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
-                        /*onClick={collapseMembers}*/> 
+                        <Button 
+                        variant="secondary"
+                        id="memberContBtn"
+                        className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
+                        onClick={collapseMemberContainer}
+                        /*onClick={collapseContainer}*/
+                        > 
                             <Users /> 
                         </Button>
                     </div> {/* Members Button */}
@@ -430,7 +508,8 @@ export default function Home() {
                     ))}
                     
                 </div>
-
+                
+                {/* Contains the formatting buttons and textarea that the user can submit text */}
                 <div id="inputContainer" className="w-auto">
 
                     <div id="formattingContainer" className="w-auto h-[6vh] bg-sky-950/75">
@@ -549,7 +628,7 @@ export default function Home() {
                             </Popover>
                         </div>
 
-                        <div id="textContainer" className="w-[100vh]">
+                        <div id="textContainer" className="w-screen">
                           
                           <Form {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-stretch w-full overflow-hidden">
@@ -599,7 +678,7 @@ export default function Home() {
 
             </div>
 
-            <div id="memberContainer" className="w-[25vw] h-[100vh] bg-blue-900/75 overflow-hidden"> {/*bg-blue-950*/}
+            <div id="memberContainer" className="block w-[25vw] h-screen bg-blue-900/75 overflow-hidden"> {/*bg-blue-950*/}
 
                 <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
                     <AccordionItem value="item-1">
