@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Lilita_One, Noto_Sans_Display, Paytone_One } from "next/font/google";
+import { Orbitron, Roboto_Serif } from "next/font/google";
 import {
   Card,
   CardContent,
@@ -11,9 +11,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+export const orbitron = Orbitron({ subsets: ['latin'] });
+export const robotoSerif = Roboto_Serif({ subsets: ['latin'] });
+
 export default function About() {
   return (
-    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh]">
+    <div className="flex flex-col items-stretch justify-between w-screen "> {/* h-screen to make header and footer follow scroll */}
       <nav className="flex items-center justify-center h-[75px]">
         <div className="w-[80%] flex items-center justify-between">
 
@@ -27,9 +30,11 @@ export default function About() {
                 alt="Picture of the author"
                 className="rounded-md"
               />
-              <h1 className={"font-lilita-one text-5xl"}>
-                <span className="text-blue-600">CTP</span>Chat
+
+              <h1 className={orbitron.className}>
+                <span className="text-7xl font-bold">Scholr</span>
               </h1>
+
             </div>
           </Link>
 
@@ -45,70 +50,141 @@ export default function About() {
         </div>
       </nav>
 
-      <div>
+      <div className="w-full h-auto">
         <h1 className="text-center text-4xl font-bold">
             About
         </h1>
 
         <h2 className="text-center text-lg font-semibold py-3">
-            Why build CTPChat?
+            What is Scholr?
         </h2>
 
-        <p className="pl-1 indent-10">
-            City University of New York (CUNY) Career Tech Prep (CTP) offers a space to learn about technology
-            whether it be Web Development or Data Science. It is composed of fellows, instructors, career coaches,
-            and so many more people. However, members of CUNY CTP have to rely on two communications applications, 
-            Slack and Discord, to communicate with each other. Slack has paywalls and limits that may hinder workflow. 
-            Discord does not have streamlined User Interface (UI) designed specifically for educational/professional work. 
-            CUNY CTP members having Slack and Discord accounts to communicate with each other may get cumbersome, confusing, 
-            and/or tiresome especially when switching between the two communication softwares.
+        <p className="px-5 indent-10 whitespace-normal break-words">
+            Scholr is an innovative communication platform designed specifically for students. 
+            It facilitates seamless interaction among classmates, club members, and various student groups. 
+            On Scholr, students can collaborate on assignments, discuss projects, prepare for exams, and share educational resources. 
+            Beyond academics, it offers a space for students to engage in club activities and have fun. 
+            This platform is an all-encompassing hub for student communication, collaboration, and community, 
+            enhancing the overall educational experience.
+        </p>
+
+        <h2 className="text-center text-lg font-semibold py-3">
+            Why build Scholr?
+        </h2>
+
+        <p className="px-5 indent-10 whitespace-normal break-words">
+            City University of New York (CUNY) colleges offer spaces to learn and grow. 
+            It is composed of students, professors, staff, principals, and so many more people. 
+            When students learn about particular topics from their classes 
+            they may want to connect with their classmates to review topics that were discussed in class,
+            ask each other questions, find common people to become friends with, and etc.
+            However, there are many communication applications that students have to message people 
+            from Meta (Facebook), Twitter, Instagram, Discord, SnapChat, WhatsApp, and many more.
+            None of them are specifically designed for college students in mind!
         </p>
 
         <br/>
 
-        <p className="pl-1 indent-10">
-            Herein lies CTPChat as an exclusive CUNY CTP communications web application designed to centralize communication
-            between CUNY CTP members.
-            CTPChat will be geared specifically towards the educational and communicative needs of CUNY CTP.
+        <p className="px-5 indent-10 whitespace-normal break-words">
+            Herein lies Scholr as an exclusive college student communications web application designed to centralize 
+            connections between all college students who may be using one to multiple messaging apps.
+            <br/>
+            <br/>
+            For Connecting, For Learning, For College Students
+            <br/>
+            Add your classmates, chat with them, share notes, and more!
+            <br/>
+            Be a Scholar today!
         </p>
 
         <h2 className="text-center text-lg font-semibold">
-            Who are the developers of CTPChat?
+            Who are the developers of Scholr?
         </h2>
 
-        <h3 className="text-base font-medium pt-2.5 pr-1 pb-1 pl-1.5">
-            Wei Jian Zhen: Front-End Developer
-        </h3>
+        <div className="flex flex-row justify-evenly align-middle">
 
-        <Button variant="link">
-            <Link href="https://github.com/WeiJian123-tech">
-                Wei Jian Zhen's GitHub Profile
-            </Link>
-        </Button>
+          {/* Wei Jian Zhen's Card */}
+          <Card className="w-96 h-auto relative m-5 border border-red-500 bg-slate-200 text-center">
+            <CardHeader>
+              <CardTitle>Wei Jian Zhen</CardTitle>
+              <CardDescription>Front-End Developer</CardDescription>
+            </CardHeader>
+            <CardContent>
 
-        <h3 className="text-base font-medium pt-2.5 pr-1 pb-1 pl-1.5">
-            Prince Addo: Back-End Developer
-        </h3>
+              <Link href="https://github.com/WeiJian123-tech" prefetch={true}>
+                <Image
+                  src="https://avatars.githubusercontent.com/u/55195954?v=4"
+                  alt="Wei Jian Zhen's GitHub Profile Picture"
+                  width={50}
+                  height={50}
+                  layout="responsive"
+                  objectFit="contain"
+                  className="text-center"
+                />
+              </Link>
 
-        <Button variant="link">
-            <Link href="https://github.com/prince-ao">
-                Prince Addo's GitHub Profile
-            </Link>
-        </Button>
+            </CardContent>
+            <CardFooter className="flex justify-center">
+
+              <Button variant="link" className="px-0">
+                <Link href="https://github.com/WeiJian123-tech" prefetch={true}>
+                    Wei Jian Zhen's GitHub Profile
+                </Link>
+              </Button>
+
+            </CardFooter>
+          </Card>
+
+          {/* Prince Addo's Card */}
+
+          <Card className="w-96 h-auto relative m-5 border border-red-500 bg-slate-200 text-center">
+            <CardHeader>
+              <CardTitle>Prince Addo</CardTitle>
+              <CardDescription>Back-End Developer</CardDescription>
+            </CardHeader>
+            <CardContent>
+
+              <Link href="https://github.com/prince-ao" prefetch={true}>
+                <Image
+                  src="https://avatars.githubusercontent.com/u/80477926?v=4"
+                  alt="Prince Addo's GitHub Profile Picture"
+                  width={50}
+                  height={50}
+                  layout="responsive"
+                  objectFit="contain"
+                  className="text-center"
+                />
+              </Link>
+
+            </CardContent>
+            <CardFooter className="flex justify-center">
+
+              <Button variant="link">
+                <Link href="https://github.com/prince-ao">
+                    Prince Addo's GitHub Profile
+                </Link>
+              </Button>
+
+            </CardFooter>
+          </Card>
+
+        </div>
 
         <h2 className="text-center text-lg font-semibold py-3">
             GitHub Repository
         </h2>
 
-        <Button variant="link">
-            <Link href="https://github.com/prince-ao/CTPChat.git">
+        <div className="flex justify-center">
+          <Button variant="link">
+              <Link href="https://github.com/prince-ao/Scholr.git">
                 github.com/prince-ao/CTPChat.git
-            </Link>
-        </Button>
+              </Link>
+          </Button>
+        </div>
 
       </div>
 
-      <div className="w-[100vw] text-center bg-neutral-300">
+      <div className="w-screen text-center bg-neutral-300">
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
           <Link href="/about" prefetch={true}>
             About
@@ -124,7 +200,7 @@ export default function About() {
         <div className="content-center">
           {/*Linked to our GitHub license.md from MIT license page*/}
           <small>
-            <Link href="https://github.com/prince-ao/CTPChat/blob/52a941732ef22bf62bd9e59133a8ccd9264608ee/LICENSE" prefetch={false}>
+            <Link href="https://github.com/prince-ao/CTPChat/blob/f66a7d93c013f16b08b34cc1af321e59dcdcba0f/LICENSE" prefetch={true}>
               &copy; MIT License
             </Link>
           </small>
