@@ -72,7 +72,11 @@ import {
   import { Input } from "@/components/ui/input";
   import { Label } from "@/components/ui/label";
   import { MenuSquare } from 'lucide-react';
+import { info } from 'console';
 
+  //Create functions to seperate sections to reduce amount of code within return statement.
+
+    //Displays a div that contains account information and a button to edit that data.
     function accountInfoDiv(props: {identifier: string, idObject: string}) {
 
         return (
@@ -117,6 +121,7 @@ import {
     }
     */
 
+    //Have to get the whole inforContainer to modify with react states.
     function collapseInfoContainer() {
         
         const infoCont = document.getElementById('infoContainer') as HTMLElement;
@@ -155,20 +160,55 @@ import {
 
     }
 
-    type Props = {
-        children: JSX.Element;
-    };
+    //interface to insert Shadcn UI accordian children props/elements
+    interface accordItemsProps {
+        children: React.JSX.Element[] | React.JSX.Element;
+        accordTriggerName: string;
+    }
 
-    function FormattingElement({ children }: Props) {
+    //Function that creates Shadcn UI <AccordionItem> tags with content within them.
+    function AccordianItems({children, accordTriggerName}:accordItemsProps) {
+        const [value, setValue] = useState(accordTriggerName);
+
+        useEffect(() => {
+            setValue(accordTriggerName);
+        }, [accordTriggerName]);
+
+        return (
+            <AccordionItem value={value}>
+                <AccordionTrigger>{accordTriggerName}</AccordionTrigger>
+                <AccordionContent>
+                    {Array.isArray(children) ? children : [children]}
+                </AccordionContent>
+            </AccordionItem>
+        );
+    }
+
+    /*
+    //Function that creates formatting text buttons with lucide-react symbols as button text
+    interface formattingProps {
+        children: React.JSX.Element;
+        onClick: () => void;
+        ariaPressed: boolean;
+      }
+
+    function FormattingElement({ children, onClick, ariaPressed }: formattingProps) {
+
         return (
             <div>
-                <Toggle aria-label="Toggle italic">
+                <Toggle 
+                aria-pressed={ariaPressed} 
+                aria-label="Toggle" 
+                onClick={onClick}
+                >
                     {children}
                 </Toggle>
             </div>
         );
     }
+    */
 
+    //Creates the UI for the text that is going to be displayed after user hits the submit button
     function DivElement({ message }: { message: string }) {
 
         const currentTime = new Date().toLocaleTimeString();
@@ -202,6 +242,34 @@ import {
         );
     }
 
+    interface collapseBtnProps {
+        children: React.JSX.Element;
+        id: string;
+        onClick: () => void;
+    }
+
+    //Creates the collapse buttons within middle chat container
+    function CollapseButton({children, id, onClick}:collapseBtnProps) {
+        const [ID, setID] = useState(id);
+
+        useEffect(() => {
+            setID(id);
+        }, [id]);
+
+        return (
+            <div className="mr-1">
+                <Button
+                    variant="secondary" 
+                    id={id}
+                    className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
+                    onClick={onClick}
+                > 
+                    {children}
+                </Button>
+            </div>
+        );
+    }
+
 export default function Home() {
 
     const [divElements, setDivElements] = useState<React.JSX.Element[]>([]);
@@ -210,7 +278,7 @@ export default function Home() {
     const FormSchema = z.object({
     //No need for validation as shadcn textarea `required` property does not allow empty messages to be submitted. 
     chatbox: z
-        .string() //Fixed Zod error messages popping up underneath Shadcn textarea.
+        .string()
     });
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -229,7 +297,19 @@ export default function Home() {
         setDivElements([...divElements, <DivElement message={input} />]);
     }
 
-    /*Text Formatting Symbols*/
+    /*
+    const [bold, setBold] = useState(false);
+    const [italic, setItalic] = useState(false);
+    const [underline, setUnderline] = useState(false);
+    const [strikethrough, setStrikethrough] = useState(false);
+
+    const styles: string[] = [];
+    if (bold) styles.push('font-bold');
+    if (italic) styles.push('italic');
+    if (underline) styles.push('underline');
+    if (strikethrough) styles.push('line-through');
+
+    //Text Formatting Symbols
     const boldSymbol = <Bold className="h-4 w-4" />;
     const italicSymbol = <Italic className="h-4 w-4" />;
     const underlineSymbol = <Underline className="h-4 w-4" />;
@@ -240,6 +320,7 @@ export default function Home() {
     const textquoteSymbol = <TextQuote className="h-4 w-4"/>;
     const code2Symbol = <Code2 className="h-4 w-4"/>;
     const squarecodeSymbol = <SquareCode className="h-4 w-4"/>;
+    */
 
     return (
         <div 
@@ -250,51 +331,53 @@ export default function Home() {
         >
 
             {/* overflow-hidden hides the scroll that appears when accordian is clicked */}
-            <div id="infoContainer" className="block w-[25vw] h-screen bg-blue-900/75 overflow-hidden">
+            <div id="infoContainer" className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden">
 
+                {/* Stores Shadcn UI Accordians and scrolls when there is a lot of content. */}
                 <div id="channelContainer" className="h-[90%]">
                     <ScrollArea className="h-full w-full rounded-md">
-                        <Accordion type="single" collapsible className="w-full bg-[#06227D]">
+                        <Accordion type="multiple" className="w-full bg-[#06227D]">
 
-                            <AccordionItem value="item-1">
-                                <AccordionTrigger>Channels</AccordionTrigger>
-                                <AccordionContent>
-                                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200"># Class</Button>
-                                </AccordionContent>
-                            </AccordionItem>
+                        {/* Like Discord channels, group chats for a specific topic */}
+                        <AccordianItems accordTriggerName="Rooms">
+                            <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200"># Class1</Button>
+                            <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200"># Class2</Button>
+                        </AccordianItems>
 
-                            <AccordionItem value="item-2">
-                                <AccordionTrigger>Direct Messages (DMs)</AccordionTrigger>
-                                <AccordionContent>
-                                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
-                                        <div>
-                                            <Avatar>
-                                                <AvatarImage src="https://is.gd/az39r7" alt="@shadcn" />
-                                                <AvatarFallback>CN</AvatarFallback>
-                                            </Avatar>
-                                        </div>
-                                        <div>
-                                            <p>
-                                                <b>Lorem Ipsum</b>
-                                            </p>
-                                        </div>
-                                    </Button>
+                        {/* 
+                        Based off Slack Direct Messages, two-person chats that people can individually talk with each other
+                        within the Space.
+                        */}
+                        <AccordianItems accordTriggerName="Direct Messages (DMs)">
+                            <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
+                                <div>
+                                    <Avatar>
+                                        <AvatarImage src="https://is.gd/az39r7" alt="@shadcn" />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                </div>
+                                <div>
+                                    <p>
+                                        <b>Lorem Ipsum</b>
+                                    </p>
+                                </div>
+                            </Button>
 
-                                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
-                                        <div>
-                                            <Avatar>
-                                                <AvatarImage src="https://is.gd/jUG71g" alt="@shadcn" />
-                                                <AvatarFallback>CN</AvatarFallback>
-                                            </Avatar>
-                                        </div>
-                                        <div>
-                                            <p>
-                                                <b>Lorem Ipsum</b>
-                                            </p>
-                                        </div>
-                                    </Button>
-                                </AccordionContent>
-                            </AccordionItem>
+                            <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
+                                <div>
+                                    <Avatar>
+                                        <AvatarImage src="https://is.gd/jUG71g" alt="@shadcn" />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                </div>
+                                <div>
+                                    <p>
+                                        <b>Lorem Ipsum</b>
+                                    </p>
+                                </div>
+                            </Button>
+                        </AccordianItems>
+
                         </Accordion>
                     </ScrollArea>
                 </div>
@@ -453,32 +536,25 @@ export default function Home() {
 
             </div>
 
-            <div id="chatContainer" className="block min-w-[50vw] w-auto h-screen bg-blue-900/75"> {/*bg-blue-950*/}
+            <div id="chatContainer" className="block static min-w-[50vw] w-auto h-screen bg-blue-900/75"> {/*bg-blue-950*/}
 
-                <div id="channelInfoContainer" className="flex items-center justify-between w-auto h-[7vh] bg-indigo-900">
+                <div id="channelInfoContainer" className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]">
                     <div className="flex items-center justify-start">
 
                         {/* Button that collapses info container to the left */}
-                        <div className="mr-1">
-                            <Button
-                                variant="secondary" 
-                                id="infoContBtn" 
-                                className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
-                                onClick={collapseInfoContainer}
-                                /*onClick={collapseContainer}*/
-                            > 
-                                <MenuSquare />
-                            </Button>
-                        </div>
+                        <CollapseButton id={"infoContBtn"} onClick={collapseInfoContainer}>
+                            <MenuSquare />
+                        </CollapseButton>
 
-                        <div className="ml-1 mr-2 text-lg">
+                        <div className="block ml-1 mr-2 text-base sm:text-lg">
                             <h1>
-                                # Channel Name
+                                # Homework Room
                             </h1>
                         </div>
 
+                        {/* Hide Description when screen size is small */}
                         <div>
-                            <p className="text-sm text-gray-300">
+                            <p className="hidden sm:block text-sm text-gray-300">
                                 A Short Channel Description
                             </p>
                         </div>
@@ -486,26 +562,23 @@ export default function Home() {
                     </div>
 
                     {/* Button that collapses members container to the right */}
-                    <div className="mr-1">
-                        <Button 
-                        variant="secondary"
-                        id="memberContBtn"
-                        className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
-                        onClick={collapseMemberContainer}
-                        /*onClick={collapseContainer}*/
-                        > 
-                            <Users /> 
-                        </Button>
-                    </div> {/* Members Button */}
+                    <CollapseButton id={"memberContBtn"} onClick={collapseMemberContainer}>
+                        <Users /> 
+                    </CollapseButton>
 
                 </div>
 
                 {/* Use states for content within messageContainer */}
-                <div id="messageContainer" className="w-full h-[78.5vh] pt-5">
+                <div id="messageContainer" className="w-full h-[78.5vh]">
+
+                    {/* Need to figure out how to scroll down when content is added */}
+                    <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
 
                     {divElements.map((element, index) => (
                         <div key={index}>{element}</div>
                     ))}
+
+                    </ScrollArea>
                     
                 </div>
                 
@@ -518,33 +591,61 @@ export default function Home() {
 
                             <Separator className="mb-3" />
 
+                            {/* Unable to format text without using depreciated JS. Need a rich text editor. */}
                             <div className="flex h-5 items-center space-x-1 text-sm">
 
-                                <FormattingElement>{boldSymbol}</FormattingElement>
-                                <FormattingElement>{italicSymbol}</FormattingElement>
-                                <FormattingElement>{underlineSymbol}</FormattingElement>
-                                <FormattingElement>{strikethroughSymbol}</FormattingElement>
+                                {/* Formatting text buttons */}
+                                {/*
+                                <FormattingElement onClick={() => setBold(!bold)} ariaPressed={bold}>
+                                    {boldSymbol}
+                                </FormattingElement>
 
-                                <Separator orientation="vertical" />
+                                <FormattingElement onClick={() => setItalic(!italic)} ariaPressed={italic}>{italicSymbol}</FormattingElement>
 
-                                <FormattingElement>{linkSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement>{listSymbol}</FormattingElement>
-                                <FormattingElement>{listorderedSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement>{textquoteSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement>{code2Symbol}</FormattingElement>
-                                <FormattingElement>{squarecodeSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
                                 
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{underlineSymbol}</FormattingElement>
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{strikethroughSymbol}</FormattingElement>
+
+                                {/* A line that divides buttons into groups */} {/*
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{linkSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{listSymbol}</FormattingElement>
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{listorderedSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{textquoteSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{code2Symbol}</FormattingElement>
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{squarecodeSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+                                */}
 
                             </div>
 
@@ -556,6 +657,7 @@ export default function Home() {
 
                     <div id="textBoxContainer" className="flex items-start justify-center w-auto h-fit">
 
+                        {/* Redo Upload Container */}
                         <div id="uploadContainer">
                             <Popover>
                                 
@@ -602,15 +704,9 @@ export default function Home() {
 
                                                     <div className="grid gap-4 py-4">
                                                         <div className="grid grid-cols-4 items-center gap-4">
-
-                                                            <Label htmlFor="name" className="text-right text-slate-200">
-                                                            File: 
-                                                            </Label>
-                                                            {/* Sets input text black instead of white*/}
-                                                            <Input
-                                                            id="name"
-                                                            className="col-span-3 text-black" 
-                                                            />
+                                                        {/* Redo upload feature. Get Uploaded files to screen. */}
+                                                        <Label htmlFor="picture" className='w-full bg-red-400 text-black'>Picture</Label>
+                                                        <Input id="picture" type="file" className='w-[25vw] bg-green-400 text-black'/>
 
                                                         </div>
                                                     </div>
@@ -646,12 +742,15 @@ export default function Home() {
                                       <Textarea
                                         required 
                                         placeholder="Type..."
-                                        className="min-h-fit
-                                        resize-none rounded-lg
+                                        className="
+                                        min-h-fit 
+                                        resize-none rounded-lg 
                                         border border-slate-500 
                                         bg-blue-950/75 text-slate-200 
                                         focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
-                                        focus-visible:shadow-gray-600"
+                                        focus-visible:shadow-gray-600 
+                                        "
+
                                         
                                         {...field}
                                       />
@@ -663,6 +762,16 @@ export default function Home() {
 
                                 )}
                               />
+
+                              {/*
+                                            `min-h-fit 
+                                            resize-none rounded-lg 
+                                            border border-slate-500 
+                                            bg-blue-950/75 text-slate-200 
+                                            focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
+                                            focus-visible:shadow-gray-600 
+                                            ${styles.join(' ')}`
+                                        */}
 
                               <Button 
                               type="submit" 
@@ -678,15 +787,12 @@ export default function Home() {
 
             </div>
 
-            <div id="memberContainer" className="block w-[25vw] h-screen bg-blue-900/75 overflow-hidden"> {/*bg-blue-950*/}
+            <div id="memberContainer" className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"> {/*bg-blue-950*/}
 
                 <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
-                    <AccordionItem value="item-1">
-                        <AccordionTrigger>Members</AccordionTrigger>
-                        <AccordionContent>
-                        {/* Insert states and JSX here to get accurate member is online information */}
-                        </AccordionContent>
-                    </AccordionItem>
+                    <AccordianItems accordTriggerName="Members">
+                        <p>Show members including user from Profile Container. May use profiles from DMs.</p>
+                    </AccordianItems>
 
                 </Accordion>
 
@@ -695,13 +801,3 @@ export default function Home() {
         </div>
     );
 }
-
-/*
-export default function Home() {
-  return (
-    <div>
-      <h1>You're logged in</h1>
-    </div>
-  );
-}
-*/

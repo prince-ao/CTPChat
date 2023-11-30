@@ -63,7 +63,7 @@ export default function Home() {
       </div>
 
       {/* Div for body/middle content */}
-      <div className=" justify-center items-center text-center align-middle">
+      <div className="justify-center items-center text-center align-middle w-screen h-auto mt-auto mb-auto">
         <h1 className={robotoSerif.className}>
           <span className="text-6xl text-black">Welcome to Scholr</span>
         </h1>
@@ -72,8 +72,14 @@ export default function Home() {
         </h2>
       </div>
 
-      {/* Div for footer */}
-      <div className="w-screen text-center bg-neutral-300">
+      {
+      /* 
+      Div for footer. 
+      'mt-auto mb-auto fixed bottom-0' to make footer always be at the bottom. 
+      Need to make all children divs be that way as well. 
+      */
+      }
+      <div className="w-screen mt-auto mb-auto fixed bottom-0 text-center bg-neutral-300">
 
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
           <Link href="/about" prefetch={true}>
