@@ -1,5 +1,5 @@
-CREATE TABLE channels (
+CREATE TABLE space (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    channel_name VARCHAR(50) NOT NULL,
+    space_name VARCHAR(50) NOT NULL,
     created_at TIMESTAMP NOT NULL
 );

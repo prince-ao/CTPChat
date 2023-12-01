@@ -1,0 +1,6 @@
+CREATE TABLE room (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    space_id INT REFERENCES space NOT NULL,
+    room_name VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
