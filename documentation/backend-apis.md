@@ -66,3 +66,44 @@
 ```
 
 ### WS /api/home
+
+### POST /api/home/get-spaces
+
+```json
+{
+  "body": {
+    "token": "string"
+  }
+}
+```
+
+`200` response:
+
+```json
+[
+  {
+    "space_id": "number",
+    "space_name": "string"
+  }
+]
+```
+
+### POST /api/home/get-friends
+
+```json
+{
+  "body": {
+    "token": "string"
+  }
+}
+```
+
+### POST /api/home/get-user-info
+
+```json
+{
+  "body": {
+    "token": "string"
+  }
+}
+```
