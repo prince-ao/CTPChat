@@ -68,6 +68,8 @@ import {
   import { Users } from 'lucide-react';
   import { PlusCircle } from 'lucide-react';
   import { Settings } from 'lucide-react';
+  import { ArrowRight } from 'lucide-react';
+  import { ArrowLeft } from 'lucide-react';
   import { Toggle } from "@/components/ui/toggle";
   import { Input } from "@/components/ui/input";
   import { Label } from "@/components/ui/label";
@@ -335,6 +337,8 @@ export default function Home() {
 
                 {/* Stores Shadcn UI Accordians and scrolls when there is a lot of content. */}
                 <div id="channelContainer" className="h-[90%]">
+                    <Button className='w-full' onClick={collapseInfoContainer}><ArrowRight /></Button>
+
                     <ScrollArea className="h-full w-full rounded-md">
                         <Accordion type="multiple" className="w-full bg-[#06227D]">
 
@@ -788,6 +792,8 @@ export default function Home() {
             </div>
 
             <div id="memberContainer" className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"> {/*bg-blue-950*/}
+                
+                <Button className='w-full' onClick={collapseMemberContainer}><ArrowLeft /></Button>
 
                 <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
                     <AccordianItems accordTriggerName="Members">
