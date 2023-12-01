@@ -1,15 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Lilita_One, Noto_Sans_Display, Paytone_One } from "next/font/google";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Orbitron, Roboto_Serif } from "next/font/google";
+
+export const orbitron = Orbitron({ subsets: ['latin'] });
+export const robotoSerif = Roboto_Serif({ subsets: ['latin'] });
 
 export default function PrivacyPolicy() {
   return (
@@ -32,9 +27,11 @@ export default function PrivacyPolicy() {
                 alt="Picture of the author"
                 className="rounded-md"
               />
-              <h1 className={"font-lilita-one text-5xl"}>
-                <span className="text-blue-600">CTP</span>Chat
+
+              <h1 className={orbitron.className}>
+                <span className="text-7xl font-bold">Scholr</span>
               </h1>
+
             </div>
           </Link>
 
@@ -68,10 +65,10 @@ export default function PrivacyPolicy() {
         <p><strong>Affiliate</strong> means an entity that controls, is controlled by or is under common control with a party, where &quot;control&quot; means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.</p>
         </li>
         <li>
-        <p><strong>Application</strong> refers to CTPChat, the software program provided by the Company.</p>
+        <p><strong>Application</strong> refers to Scholr, the software program provided by the Company.</p>
         </li>
         <li>
-        <p><strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to CTPChat.</p>
+        <p><strong>Company</strong> (referred to as either &quot;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement) refers to Scholr.</p>
         </li>
         <li>
         <p><strong>Country</strong> refers to: New York,  United States</p>
@@ -224,7 +221,7 @@ export default function PrivacyPolicy() {
         </ul>
       </div>
 
-      <div className="w-[100vw] text-center bg-neutral-300">
+      <div className="w-screen text-center bg-neutral-300">
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
           <Link href="/about" prefetch={true}>
             About
@@ -240,7 +237,7 @@ export default function PrivacyPolicy() {
         <div className="content-center">
           {/*Linked to our GitHub license.md from MIT license page*/}
           <small>
-            <Link href="https://github.com/prince-ao/CTPChat/blob/52a941732ef22bf62bd9e59133a8ccd9264608ee/LICENSE" prefetch={false}>
+            <Link href="https://github.com/prince-ao/CTPChat/blob/52a941732ef22bf62bd9e59133a8ccd9264608ee/LICENSE" prefetch={true}>
               &copy; MIT License
             </Link>
           </small>

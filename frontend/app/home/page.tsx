@@ -140,6 +140,34 @@ function DivElement({ message }: { message: string }) {
   );
 }
 
+    interface collapseBtnProps {
+        children: React.JSX.Element;
+        id: string;
+        onClick: () => void;
+    }
+
+    //Creates the collapse buttons within middle chat container
+    function CollapseButton({children, id, onClick}:collapseBtnProps) {
+        const [ID, setID] = useState(id);
+
+        useEffect(() => {
+            setID(id);
+        }, [id]);
+
+        return (
+            <div className="mr-1">
+                <Button
+                    variant="secondary" 
+                    id={id}
+                    className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
+                    onClick={onClick}
+                > 
+                    {children}
+                </Button>
+            </div>
+        );
+    }
+
 export default function Home() {
   const [divElements, setDivElements] = useState<React.JSX.Element[]>([]);
 
@@ -176,7 +204,6 @@ export default function Home() {
   const textquoteSymbol = <TextQuote className="h-4 w-4" />;
   const code2Symbol = <Code2 className="h-4 w-4" />;
   const squarecodeSymbol = <SquareCode className="h-4 w-4" />;
-
   return (
     <div
       className="flex items-center justify-center
@@ -221,7 +248,6 @@ export default function Home() {
                       </p>
                     </div>
                   </Button>
-
                   <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
                     <div>
                       <Avatar>
@@ -361,7 +387,6 @@ export default function Home() {
                     <TabsContent value="profile" className="w-full h-full m-0">
                       <Card className="w-full h-full bg-[#082261] text-slate-200">
                         <CardTitle>Profile</CardTitle>
-
                         <div className="flex justify-center items-center w-full h-aut">
                           <div>
                             <Avatar>
@@ -451,7 +476,6 @@ export default function Home() {
             <div className="ml-1 mr-2 text-lg">
               <h1># Channel Name</h1>
             </div>
-
             <div>
               <p className="text-sm text-gray-300">
                 A Short Channel Description
