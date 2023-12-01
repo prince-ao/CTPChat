@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -53,6 +53,19 @@ export default function Login() {
       router.push("/");
     } else setError(await result.text());
   }
+
+  useEffect(() => {
+    (async () => {
+      const result = await fetch("http://localhost:8008/v1/auth/is-logged-in", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ uuid: localStorage.getItem("uuid") }),
+      });
+      if ((await result.text()) === "YES") router.push("/home");
+    })();
+  }, []);
 
   return (
     <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
