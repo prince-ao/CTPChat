@@ -10,16 +10,18 @@
     "email": "string",
     "first_name": "string",
     "last_name": "string",
-    "middle_name": "string",
-    "password": "string"
+    "password": "string",
+    "dob": "string"
   }
 }
 ```
 
 `200` response:
 
-```
-Set-Cookie: (xrt59z) -> (token)
+```json
+{
+  "token": "string"
+}
 ```
 
 `400` response:
@@ -47,8 +49,10 @@ Set-Cookie: (xrt59z) -> (token)
 
 `200` response:
 
-```
-Set-Cookie: (xrt59z) -> (token)
+```json
+{
+  "token": "string"
+}
 ```
 
 `400` response:
@@ -61,18 +65,4 @@ Set-Cookie: (xrt59z) -> (token)
 }
 ```
 
-### GET /api/auth/is-logged-in
-
-```json
-{
-  "body": {
-    "uuid": "string"
-  }
-}
-```
-
-`200` response:
-
-```
-(YES | NO)
-```
+### WS /api/home

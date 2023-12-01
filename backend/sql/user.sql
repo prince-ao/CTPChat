@@ -1,0 +1,9 @@
+CREATE TABLE user (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    email VARCHAR(100) NOT NULL,
+    school VARCHAR(50) NOT NULL,
+    username VARCHAR(100) NOT NULL,
+    password VARCHAR(200) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    created_at TIMESTAMP NOT NULL
+);
