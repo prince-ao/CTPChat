@@ -2,15 +2,14 @@
   "name": "backend",
   "version": "1.0.50",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
     "@elysiajs/cors": "^0.7.1",
-    "@types/jsonwebtoken": "^9.0.5",
     "@types/pg": "^8.10.3",
     "@types/uuid": "^9.0.4",
     "elysia": "latest",
-    "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.3",
     "redis": "^4.6.10",
     "uuid": "^9.0.1"
