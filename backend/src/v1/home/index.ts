@@ -25,7 +25,7 @@ const app = new Elysia().group("/home", (app) =>
           case "send":
             if (parsed_message.room_id) {
               postgresPool.query(
-                "INSERT INTO message(user_from, message_text, room_id, updated_at, sent_at) VALUES ($1, $2, $3, $4, $5)",
+                "INSERT INTO messages(user_from, message_text, room_id, updated_at, sent_at) VALUES ($1, $2, $3, $4, $5)",
                 [
                   user,
                   parsed_message.message,
@@ -42,7 +42,7 @@ const app = new Elysia().group("/home", (app) =>
               }
             } else {
               postgresPool.query(
-                "INSERT INTO message(user_from, message_text, friend_id, updated_at, sent_at) VALUES ($1, $2, $3, $4, $5)",
+                "INSERT INTO messages(user_from, message_text, friend_id, updated_at, sent_at) VALUES ($1, $2, $3, $4, $5)",
                 [
                   user,
                   parsed_message.message,
@@ -84,7 +84,7 @@ const app = new Elysia().group("/home", (app) =>
         const user = jwt.verify(body.token, process.env.JWTPASS as string);
 
         const result = await postgresPool.query(
-          "SELECT space_membership.space_id AS space_id, space.space_name AS space_name FROM space_membership INNER JOIN space ON space_membership.space_id = space.id WHERE space_membership.user_id = $1",
+          "SELECT space_memberships.space_id AS space_id, spaces.space_name AS space_name FROM space_memberships INNER JOIN spaces ON space_memberships.space_id = spaces.id WHERE space_memberships.user_id = $1",
           [user]
         );
 
@@ -102,7 +102,7 @@ const app = new Elysia().group("/home", (app) =>
         const user = jwt.verify(body.token, process.env.JWTPASS as string);
 
         const result = await postgresPool.query(
-          "SELECT user.username AS username, user.id AS id FROM friend  INNER JOIN user ON friend.user_id1 = user.id WHERE friend.user_id1 = $1 AND friend.status = $2  UNION  SELECT *  FROM friend  INNER JOIN user ON friend.user_id2 = user.id WHERE friend.user_id2 = $1 AND friend.status = $2;",
+          "SELECT users.username AS username, users.id AS id FROM friends  INNER JOIN users ON friends.user_id1 = users.id WHERE friends.user_id1 = $1 AND friends.status = $2  UNION  SELECT *  FROM friends  INNER JOIN users ON friends.user_id2 = users.id WHERE friends.user_id2 = $1 AND friends.status = $2;",
           [user, "Accepted"]
         );
 
@@ -120,7 +120,7 @@ const app = new Elysia().group("/home", (app) =>
         const user = jwt.verify(body.token, process.env.JWTPASS as string);
 
         const result = await postgresPool.query(
-          "SELECT email, school, username, date_of_birth FROM user WHERE id = $1",
+          "SELECT email, school, username, date_of_birth FROM users WHERE id = $1",
           [user]
         );
 

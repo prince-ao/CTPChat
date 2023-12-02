@@ -1,4 +1,4 @@
-function getSchool(domain: string) {
+export default function getSchool(domain: string) {
   if (domain.includes("csi.cuny.edu")) {
     return "CUNY College of Staten Island";
   } else if (domain.includes("jjay.cuny.edu")) {

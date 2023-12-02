@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const formSchema = z.object({
@@ -32,6 +32,12 @@ export default function Login() {
 
   const router = useRouter();
 
+  useEffect(() => {
+    if (localStorage.getItem("uuid") != null) {
+      router.replace("/home");
+    }
+  });
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     form.setValue("email", "");
     form.setValue("password", "");
@@ -46,11 +52,11 @@ export default function Login() {
         password: values.password,
       }),
     });
-    
+
     if (result.status < 300) {
       const response_json = await result.json();
-      localStorage.setItem("uuid", response_json.message);
-      router.push("/");
+      localStorage.setItem("uuid", response_json.token);
+      router.push("/home");
     } else setError(await result.text());
   }
 

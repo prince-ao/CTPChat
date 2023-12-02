@@ -10,6 +10,7 @@
     "@types/pg": "^8.10.3",
     "@types/uuid": "^9.0.4",
     "elysia": "latest",
+    "jsonwebtoken": "8.5.1",
     "pg": "^8.11.3",
     "redis": "^4.6.10",
     "uuid": "^9.0.1"

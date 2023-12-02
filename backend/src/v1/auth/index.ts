@@ -2,9 +2,12 @@ import { Elysia, t } from "elysia";
 import { v4 as uuidv4 } from "uuid";
 import { postgresPool } from "../../db";
 import jwt from "jsonwebtoken";
+import cors from "@elysiajs/cors";
+import getSchool from "../../../utils/getSchool";
 
 const app = new Elysia().group("/auth", (app) =>
   app
+    .use(cors())
     .post(
       "/signup",
       async ({ body, set }) => {
@@ -20,7 +23,7 @@ const app = new Elysia().group("/auth", (app) =>
         6. send the JWT
         */
         const username_result = await postgresPool.query(
-          "SELECT email, username FROM user WHERE username = $1 OR email = $2",
+          "SELECT email, username FROM users WHERE username = $1 OR email = $2",
           [body.username, body.email]
         );
 
@@ -36,13 +39,13 @@ const app = new Elysia().group("/auth", (app) =>
         const password_hash = await Bun.password.hash(body.password);
 
         const result = await postgresPool.query(
-          "INSERT INTO user(email, username, password, school, date_of_birth, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+          "INSERT INTO users(email, username, password, school, date_of_birth, created_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
           [
             body.email,
             body.username,
             password_hash,
             school,
-            body.date_of_birth,
+            new Date(body.date_of_birth),
             new Date(),
           ]
         );
@@ -52,6 +55,8 @@ const app = new Elysia().group("/auth", (app) =>
           process.env.JWTPASS as string
         );
 
+        console.log("also workss");
+
         return { token };
       },
       {
@@ -59,7 +64,7 @@ const app = new Elysia().group("/auth", (app) =>
           email: t.String(),
           username: t.String(),
           password: t.String(),
-          date_of_birth: t.Date(),
+          date_of_birth: t.String(),
         }),
       }
     )
