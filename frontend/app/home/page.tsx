@@ -11,7 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   Popover,
@@ -265,70 +265,269 @@ function CollapseButton({ children, id, onClick }: collapseBtnProps) {
 }
 
 export default function Home() {
-  const [divElements, setDivElements] = useState<React.JSX.Element[]>([]);
-
-  /*Message expands textarea past div height*/
-  const FormSchema = z.object({
-    //No need for validation as shadcn textarea `required` property does not allow empty messages to be submitted.
-    chatbox: z.string(),
-  });
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      chatbox: "",
-    },
-  });
-
-  //Be careful of React state pitfall: https://is.gd/NLwCfG
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    //console.log(data.chatbox);
-
-    const input = data.chatbox;
-
-    setDivElements([...divElements, <DivElement message={input} />]);
+  interface Space {
+    space_id: number;
+    space_name: string;
   }
 
-  /*
-    const [bold, setBold] = useState(false);
-    const [italic, setItalic] = useState(false);
-    const [underline, setUnderline] = useState(false);
-    const [strikethrough, setStrikethrough] = useState(false);
+  interface Friend {
+    username: string;
+    id: number;
+  }
 
-    const styles: string[] = [];
-    if (bold) styles.push('font-bold');
-    if (italic) styles.push('italic');
-    if (underline) styles.push('underline');
-    if (strikethrough) styles.push('line-through');
+  interface UserInfo {
+    date_of_birth: string;
+    email: string;
+    school: string;
+    username: string;
+  }
 
-    //Text Formatting Symbols
-    const boldSymbol = <Bold className="h-4 w-4" />;
-    const italicSymbol = <Italic className="h-4 w-4" />;
-    const underlineSymbol = <Underline className="h-4 w-4" />;
-    const strikethroughSymbol = <Strikethrough className="h-4 w-4" />;
-    const linkSymbol = <Link className="h-4 w-4" />;
-    const listSymbol = <List className="h-4 w-4"/>;
-    const listorderedSymbol = <ListOrdered className="h-4 w-4"/>;
-    const textquoteSymbol = <TextQuote className="h-4 w-4"/>;
-    const code2Symbol = <Code2 className="h-4 w-4"/>;
-    const squarecodeSymbol = <SquareCode className="h-4 w-4"/>;
-    */
+  interface FriendRequest {
+    requester_id: number;
+    requester_name: string;
+    requester_school: string;
+  }
+
+  interface StateRoute {
+    route: Routes;
+    sub_route?: string;
+  }
+
+  type Routes = "FRIEND_INFO" | "ADD_FRIEND" | "DIRECT_MESSAGE";
+
+  const [spaces, setSpaces] = useState<Space[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [userInfo, setUserInfo] = useState<UserInfo[]>([]);
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [rightSideRoute, setRightSideRoute] = useState<StateRoute>({
+    route: "FRIEND_INFO",
+    sub_route: "All",
+  });
+  const [friendRequest, setFriendRequest] = useState("");
+  const [friendRequestStatus, setFriendRequestStatus] = useState("");
 
   const router = useRouter();
 
   useEffect(() => {
+    (async () => {
+      const spaces = await fetch("http://localhost:8008/v1/home/get-spaces", {
+        method: "POST",
+        body: JSON.stringify({
+          token: localStorage.getItem("uuid"),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const friends = await fetch("http://localhost:8008/v1/home/get-friends", {
+        method: "POST",
+        body: JSON.stringify({
+          token: localStorage.getItem("uuid"),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const user_info = await fetch(
+        "http://localhost:8008/v1/home/get-user-info",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            token: localStorage.getItem("uuid"),
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const friend_requests = await fetch(
+        "http://localhost:8008/v1/home/get-friend-requests",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            token: localStorage.getItem("uuid"),
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setSpaces(await spaces.json());
+      setFriends(await friends.json());
+      setUserInfo(await user_info.json());
+      setFriendRequests(await friend_requests.json());
+    })();
     if (localStorage.getItem("uuid") === null) {
       router.replace("/");
     }
   }, []);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setFriendRequestStatus("");
+    }, 2e3);
+  }, [friendRequestStatus]);
+
   return (
-    <div
-      className="flex items-center justify-center
-        w-screen h-screen
-        bg-slate-950 text-slate-200 
-        divide-x divide-slate-600 divide-y-0"
-    >
+    <main className="flex">
+      <div className=" border-e-2 border-black min-h-screen">
+        <button>friends</button>
+        {spaces.map(({ space_name, space_id }) => (
+          <button key={space_id}>{space_name}</button>
+        ))}
+      </div>
+      <div>
+        <button
+          className="bg-green-600"
+          onClick={() => setRightSideRoute({ route: "ADD_FRIEND" })}
+        >
+          Add friend
+        </button>
+        <h2>Direct Message</h2>
+        <div className="flex">
+          {friends.map(({ id, username }) => (
+            <button key={id}>{username}</button>
+          ))}
+        </div>
+        <div className="flex">
+          <img
+            src="https://picsum.photos/200"
+            alt="user profile image"
+            className="w-[50px] h-[50px] me-6 rounded-full"
+          />
+          <div>
+            <p className="text-xl">
+              {userInfo.length > 0 && userInfo[0].username}
+            </p>
+            <p>{userInfo.length > 0 && userInfo[0].school}</p>
+          </div>
+        </div>
+      </div>
+
+      {rightSideRoute.route === "ADD_FRIEND" ? (
+        <div>
+          <input
+            type="text"
+            className="border-2 border-black"
+            value={friendRequest}
+            onChange={(e) => setFriendRequest(e.target.value)}
+          />
+          <button
+            className=" bg-blue-500"
+            onClick={async () => {
+              setFriendRequestStatus("");
+              try {
+                const result = await fetch(
+                  "http://localhost:8008/v1/home/add-friend",
+                  {
+                    method: "POST",
+                    body: JSON.stringify({
+                      token: localStorage.getItem("uuid"),
+                      username: friendRequest,
+                    }),
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+                setFriendRequestStatus(await result.text());
+              } catch (e) {
+                setFriendRequestStatus("User not found.");
+              } finally {
+                setFriendRequest("");
+              }
+            }}
+          >
+            Send Friend Request
+          </button>
+          <p
+            className={`${
+              friendRequestStatus === "User not found."
+                ? "text-red-600"
+                : "text-green-500"
+            }`}
+          >
+            {friendRequestStatus}
+          </p>
+        </div>
+      ) : rightSideRoute.route === "FRIEND_INFO" ? (
+        <div>
+          <div className="flex gap-12">
+            <button
+              onClick={() =>
+                setRightSideRoute({ ...rightSideRoute, sub_route: "Online" })
+              }
+            >
+              Online
+            </button>
+            <button
+              onClick={() =>
+                setRightSideRoute({ ...rightSideRoute, sub_route: "All" })
+              }
+            >
+              All
+            </button>
+            <button
+              onClick={() =>
+                setRightSideRoute({
+                  ...rightSideRoute,
+                  sub_route: "Friend Requests",
+                })
+              }
+            >
+              Friend Requests
+            </button>
+          </div>
+
+          {rightSideRoute.sub_route === "All" ? (
+            <div></div>
+          ) : rightSideRoute.sub_route === "Online" ? (
+            <div></div>
+          ) : (
+            <div>
+              <h2>Friend requests</h2>
+
+              {friendRequests.map(
+                ({ requester_id, requester_name, requester_school }) => (
+                  <div className="flex" key={requester_id}>
+                    <div>
+                      <p className="text-xl font-bold">{requester_name}</p>
+                      <p>{requester_school}</p>
+                    </div>
+                    <button
+                      className="bg-green-500"
+                      onClick={async () => {
+                        await fetch(
+                          "http://localhost:8008/v1/home/accept-friend-request",
+                          {
+                            method: "POST",
+                            body: JSON.stringify({
+                              token: localStorage.getItem("uuid"),
+                              user_id: requester_id,
+                            }),
+                            headers: {
+                              "Content-Type": "application/json",
+                            },
+                          }
+                        );
+                        setFriendRequests(
+                          friendRequests.filter(
+                            (f) => f.requester_id != requester_id
+                          )
+                        );
+                      }}
+                    >
+                      Accept
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div></div>
+      )}
       <button
         onClick={() => {
           localStorage.removeItem("uuid");
@@ -337,519 +536,641 @@ export default function Home() {
       >
         Logout
       </button>
-
-      {/* overflow-hidden hides the scroll that appears when accordian is clicked */}
-      <div
-        id="infoContainer"
-        className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"
-      >
-        {/* Stores Shadcn UI Accordians and scrolls when there is a lot of content. */}
-        <div id="channelContainer" className="h-[90%]">
-          <Button className="w-full" onClick={collapseInfoContainer}>
-            <ArrowRight />
-          </Button>
-
-          <ScrollArea className="h-full w-full rounded-md">
-            <Accordion type="multiple" className="w-full bg-[#06227D]">
-              {/* Like Discord channels, group chats for a specific topic */}
-              <AccordianItems accordTriggerName="Rooms">
-                <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
-                  # Class1
-                </Button>
-                <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
-                  # Class2
-                </Button>
-              </AccordianItems>
-
-              {/* 
-                        Based off Slack Direct Messages, two-person chats that people can individually talk with each other
-                        within the Space.
-                        */}
-              <AccordianItems accordTriggerName="Direct Messages (DMs)">
-                <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
-                  <div>
-                    <Avatar>
-                      <AvatarImage src="https://is.gd/az39r7" alt="@shadcn" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div>
-                    <p>
-                      <b>Lorem Ipsum</b>
-                    </p>
-                  </div>
-                </Button>
-
-                <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
-                  <div>
-                    <Avatar>
-                      <AvatarImage src="https://is.gd/jUG71g" alt="@shadcn" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div>
-                    <p>
-                      <b>Lorem Ipsum</b>
-                    </p>
-                  </div>
-                </Button>
-              </AccordianItems>
-            </Accordion>
-          </ScrollArea>
-        </div>
-
-        <div
-          id="profileContainer"
-          className="flex items-center justify-center align-bottom h-[10%]"
-        >
-          {/*Extra feature: Could make profile information appear when profile is clicked. */}
-          <div
-            id="profile"
-            className="flex items-stretch justify-stretch w-5/6 h-full p-3 bg-blue-950/75"
-          >
-            <div className="m-2">
-              <Avatar>
-                <AvatarImage
-                  src="https://github.com/shadcn.png"
-                  alt="@shadcn"
-                />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="m-2">
-              <p>
-                <b>Lorem Ipsum</b>
-              </p>
-            </div>
-          </div>
-
-          <div id="settings" className="h-full">
-            {/*
-                        <Button variant="secondary" className="w-full h-full bg-blue-900/75 hover:bg-blue-700/75 text-slate-200">
-                            <Settings />
-                        </Button>*/}
-
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="secondary"
-                  className="w-full h-full
-                                bg-blue-900/75 hover:bg-blue-700/75 text-slate-200"
-                >
-                  <Settings />
-                </Button>
-              </DialogTrigger>
-
-              <DialogContent className="max-w-full w-full h-full bg-[#0D2257]/90 text-slate-200">
-                <Tabs
-                  defaultValue="myaccount"
-                  className="flex h-screen w-[95vw]"
-                >
-                  <div
-                    id="tabsList"
-                    className="w-fit h-full border border-[#9CB3E3] rounded-md"
-                  >
-                    <TabsList
-                      className="grid grid-row-3
-                                         w-[20vw] h-auto
-                                         justify-normal 
-                                         bg-[#16337D] text-slate-200"
-                    >
-                      <TabsTrigger value="myaccount">My Account</TabsTrigger>
-                      <TabsTrigger value="profile">Profile</TabsTrigger>
-                      <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
-                    </TabsList>
-                  </div>
-
-                  <div id="tabsContent" className=" w-full h-full">
-                    <TabsContent
-                      value="myaccount"
-                      className="w-full h-full m-0"
-                    >
-                      <Card className="w-full h-full bg-[#082261] text-slate-200">
-                        <CardTitle>My Account</CardTitle>
-
-                        <div className="bg-teal-700">
-                          {/*Make map of repeatable code in future Link: https://sl.bing.net/5TNfKtfrsy */}
-                          <div className="flex justify-between items-center w-full h-auto">
-                            <div className="flex justify-start items-center">
-                              <Avatar>
-                                <AvatarImage src="https://github.com/shadcn.png" />
-                                <AvatarFallback>CN</AvatarFallback>
-                              </Avatar>
-
-                              <h6>Lorem Ipsum</h6>
-                            </div>
-
-                            <div>
-                              <Button variant="link" className="text-blue-300">
-                                Edit
-                              </Button>
-                            </div>
-                          </div>
-
-                          {accountInfoDiv({
-                            identifier: "Role:",
-                            idObject: "Student",
-                          })}
-
-                          {accountInfoDiv({
-                            identifier: "Phone Number:",
-                            idObject: "###-###-####",
-                          })}
-
-                          {accountInfoDiv({
-                            identifier: "Email:",
-                            idObject: "Castocired54@cuvox.de",
-                          })}
-                        </div>
-
-                        <div className="flex w-full max-w-sm items-center space-x-2 my-[5px]">
-                          <Button type="submit">Change Password</Button>
-                          <Input type="changePassword" placeholder="password" />
-                        </div>
-
-                        <div className="w-full h-auto my-60">
-                          <Button className="bg-red-600">Delete Account</Button>
-                        </div>
-                      </Card>
-                    </TabsContent>
-
-                    <TabsContent value="profile" className="w-full h-full m-0">
-                      <Card className="w-full h-full bg-[#082261] text-slate-200">
-                        <CardTitle>Profile</CardTitle>
-
-                        <div className="flex justify-center items-center w-full h-aut">
-                          <div>
-                            <Avatar>
-                              <AvatarImage src="https://github.com/shadcn.png" />
-                              <AvatarFallback>CN</AvatarFallback>
-                            </Avatar>
-
-                            <Button variant="link" className="text-blue-300">
-                              Edit
-                            </Button>
-                          </div>
-                        </div>
-
-                        {accountInfoDiv({
-                          identifier: "Role:",
-                          idObject: "Student",
-                        })}
-
-                        {accountInfoDiv({
-                          identifier: "Pronouns:",
-                          idObject: "He/Her/They",
-                        })}
-
-                        {accountInfoDiv({
-                          identifier: "First Name:",
-                          idObject: "John",
-                        })}
-
-                        {accountInfoDiv({
-                          identifier: "Last Name:",
-                          idObject: "Doe",
-                        })}
-
-                        {accountInfoDiv({
-                          identifier: "Phone Number:",
-                          idObject: "###-###-####",
-                        })}
-
-                        {accountInfoDiv({
-                          identifier: "Email:",
-                          idObject: "Castocired54@cuvox.de",
-                        })}
-                      </Card>
-                    </TabsContent>
-
-                    <TabsContent
-                      value="adjustments"
-                      className="w-full h-full m-0"
-                    >
-                      <Card className="w-full h-full bg-[#082261] text-slate-200">
-                        <CardTitle>Adjustments</CardTitle>
-
-                        <h1>Audio: </h1>
-                        <Button>Change Audio</Button>
-
-                        <h1>Background Color: </h1>
-
-                        <Button>Change Background Color</Button>
-                      </Card>
-                    </TabsContent>
-                  </div>
-                </Tabs>
-              </DialogContent>
-            </Dialog>
-          </div>
-        </div>
-      </div>
-
-      <div
-        id="chatContainer"
-        className="block static min-w-[50vw] w-auto h-screen bg-blue-900/75"
-      >
-        {" "}
-        {/*bg-blue-950*/}
-        <div
-          id="channelInfoContainer"
-          className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]"
-        >
-          <div className="flex items-center justify-start">
-            {/* Button that collapses info container to the left */}
-            <CollapseButton id={"infoContBtn"} onClick={collapseInfoContainer}>
-              <MenuSquare />
-            </CollapseButton>
-
-            <div className="block ml-1 mr-2 text-base sm:text-lg">
-              <h1># Homework Room</h1>
-            </div>
-
-            {/* Hide Description when screen size is small */}
-            <div>
-              <p className="hidden sm:block text-sm text-gray-300">
-                A Short Channel Description
-              </p>
-            </div>
-          </div>
-
-          {/* Button that collapses members container to the right */}
-          <CollapseButton
-            id={"memberContBtn"}
-            onClick={collapseMemberContainer}
-          >
-            <Users />
-          </CollapseButton>
-        </div>
-        {/* Use states for content within messageContainer */}
-        <div id="messageContainer" className="w-full h-[78.5vh]">
-          {/* Need to figure out how to scroll down when content is added */}
-          <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
-            {divElements.map((element, index) => (
-              <div key={index}>{element}</div>
-            ))}
-          </ScrollArea>
-        </div>
-        {/* Contains the formatting buttons and textarea that the user can submit text */}
-        <div id="inputContainer" className="w-auto">
-          <div
-            id="formattingContainer"
-            className="w-auto h-[6vh] bg-sky-950/75"
-          >
-            <div>
-              <Separator className="mb-3" />
-
-              {/* Unable to format text without using depreciated JS. Need a rich text editor. */}
-              <div className="flex h-5 items-center space-x-1 text-sm">
-                {/* Formatting text buttons */}
-                {/*
-                                <FormattingElement onClick={() => setBold(!bold)} ariaPressed={bold}>
-                                    {boldSymbol}
-                                </FormattingElement>
-
-                                <FormattingElement onClick={() => setItalic(!italic)} ariaPressed={italic}>{italicSymbol}</FormattingElement>
-
-                                
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{underlineSymbol}</FormattingElement>
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{strikethroughSymbol}</FormattingElement>
-
-                                {/* A line that divides buttons into groups */}{" "}
-                {/*
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{linkSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{listSymbol}</FormattingElement>
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{listorderedSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{textquoteSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{code2Symbol}</FormattingElement>
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{squarecodeSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-                                */}
-              </div>
-            </div>
-          </div>
-
-          <Separator className="mb-0" />
-
-          <div
-            id="textBoxContainer"
-            className="flex items-start justify-center w-auto h-fit"
-          >
-            {/* Redo Upload Container */}
-            <div id="uploadContainer">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    className="h-[8vh] bg-sky-950/75 hover:bg-blue-700/75 text-slate-200 rounded"
-                  >
-                    <PlusCircle />
-                  </Button>
-                </PopoverTrigger>
-
-                <PopoverContent className="w-80 bg-[#0D2257]/90">
-                  <div className="grid gap-4">
-                    <div className="space-y-2 text-slate-200">
-                      <h4 className="font-medium leading-none">
-                        Upload a File
-                      </h4>
-                      <p className="text-sm text-muted-foreground">Upload ⬆️</p>
-                    </div>
-
-                    <div className="grid gap-2">
-                      <div className="grid grid-cols-3 items-center gap-4">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="bg-sky-200/10 hover:bg-slate-100/[.85] text-slate-200"
-                            >
-                              Upload
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px] bg-[#0D2257]/90 text-slate-200">
-                            {/* DialogContent text color for close button color */}
-                            <DialogHeader className="text-slate-200">
-                              <DialogTitle>Upload a File</DialogTitle>
-                              <DialogDescription>
-                                Upload an image, file, or video.
-                              </DialogDescription>
-                            </DialogHeader>
-
-                            <div className="grid gap-4 py-4">
-                              <div className="grid grid-cols-4 items-center gap-4">
-                                {/* Redo upload feature. Get Uploaded files to screen. */}
-                                <Label
-                                  htmlFor="picture"
-                                  className="w-full bg-red-400 text-black"
-                                >
-                                  Picture
-                                </Label>
-                                <Input
-                                  id="picture"
-                                  type="file"
-                                  className="w-[25vw] bg-green-400 text-black"
-                                />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button type="submit">Upload</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            <div id="textContainer" className="w-screen">
-              <Form {...form}>
-                <form
-                  onSubmit={form.handleSubmit(onSubmit)}
-                  className="flex items-stretch w-full overflow-hidden"
-                >
-                  <FormField
-                    control={form.control}
-                    name="chatbox"
-                    render={({ field }) => (
-                      /* FormItem determines the dimensions of the textarea */
-                      <FormItem className="w-full">
-                        <FormControl>
-                          {/* When Textarea is focused && ...field https://scrimba.com/articles/react-spread-operator/*/}
-                          <Textarea
-                            required
-                            placeholder="Type..."
-                            className="
-                                        min-h-fit 
-                                        resize-none rounded-lg 
-                                        border border-slate-500 
-                                        bg-blue-950/75 text-slate-200 
-                                        focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
-                                        focus-visible:shadow-gray-600 
-                                        "
-                            {...field}
-                          />
-                        </FormControl>
-
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/*
-                                            `min-h-fit 
-                                            resize-none rounded-lg 
-                                            border border-slate-500 
-                                            bg-blue-950/75 text-slate-200 
-                                            focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
-                                            focus-visible:shadow-gray-600 
-                                            ${styles.join(' ')}`
-                                        */}
-
-                  <Button
-                    type="submit"
-                    className="h-auto bg-teal-500/80 hover:bg-blue-700/75 text-slate-200 rounded"
-                  >
-                    Submit
-                  </Button>
-                </form>
-              </Form>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div
-        id="memberContainer"
-        className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"
-      >
-        {" "}
-        {/*bg-blue-950*/}
-        <Button className="w-full" onClick={collapseMemberContainer}>
-          <ArrowLeft />
-        </Button>
-        <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
-          <AccordianItems accordTriggerName="Members">
-            <p>
-              Show members including user from Profile Container. May use
-              profiles from DMs.
-            </p>
-          </AccordianItems>
-        </Accordion>
-      </div>
-    </div>
+    </main>
   );
 }
+
+// export default function Home() {
+//   const [divElements, setDivElements] = useState<React.JSX.Element[]>([]);
+
+//   /*Message expands textarea past div height*/
+//   const FormSchema = z.object({
+//     //No need for validation as shadcn textarea `required` property does not allow empty messages to be submitted.
+//     chatbox: z.string(),
+//   });
+
+//   const form = useForm<z.infer<typeof FormSchema>>({
+//     resolver: zodResolver(FormSchema),
+//     defaultValues: {
+//       chatbox: "",
+//     },
+//   });
+
+//   //Be careful of React state pitfall: https://is.gd/NLwCfG
+//   function onSubmit(data: z.infer<typeof FormSchema>) {
+//     //console.log(data.chatbox);
+
+//     const input = data.chatbox;
+
+//     setDivElements([...divElements, <DivElement message={input} />]);
+//   }
+
+//   /*
+//     const [bold, setBold] = useState(false);
+//     const [italic, setItalic] = useState(false);
+//     const [underline, setUnderline] = useState(false);
+//     const [strikethrough, setStrikethrough] = useState(false);
+
+//     const styles: string[] = [];
+//     if (bold) styles.push('font-bold');
+//     if (italic) styles.push('italic');
+//     if (underline) styles.push('underline');
+//     if (strikethrough) styles.push('line-through');
+
+//     //Text Formatting Symbols
+//     const boldSymbol = <Bold className="h-4 w-4" />;
+//     const italicSymbol = <Italic className="h-4 w-4" />;
+//     const underlineSymbol = <Underline className="h-4 w-4" />;
+//     const strikethroughSymbol = <Strikethrough className="h-4 w-4" />;
+//     const linkSymbol = <Link className="h-4 w-4" />;
+//     const listSymbol = <List className="h-4 w-4"/>;
+//     const listorderedSymbol = <ListOrdered className="h-4 w-4"/>;
+//     const textquoteSymbol = <TextQuote className="h-4 w-4"/>;
+//     const code2Symbol = <Code2 className="h-4 w-4"/>;
+//     const squarecodeSymbol = <SquareCode className="h-4 w-4"/>;
+//     */
+
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     (async () => {
+//       const spaces = await fetch("http://localhost:8008/v1/home/get-spaces", {
+//         method: "POST",
+//         body: JSON.stringify({
+//           token: localStorage.getItem("uuid"),
+//         }),
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+//       const friends = await fetch("http://localhost:8008/v1/home/get-friends", {
+//         method: "POST",
+//         body: JSON.stringify({
+//           token: localStorage.getItem("uuid"),
+//         }),
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+//       const user_info = await fetch(
+//         "http://localhost:8008/v1/home/get-user-info",
+//         {
+//           method: "POST",
+//           body: JSON.stringify({
+//             token: localStorage.getItem("uuid"),
+//           }),
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+//       console.log(await spaces.json());
+//       console.log(await friends.json());
+//       console.log(await user_info.json());
+//     })();
+//     if (localStorage.getItem("uuid") === null) {
+//       router.replace("/");
+//     }
+//   }, []);
+
+//   return (
+//     <main>
+
+//       <div>
+//         <button>friends</button>
+
+//       </div>
+
+//     </main>
+//   )
+
+//   // return (
+//   //   <div
+//   //     className="flex items-center justify-center
+//   //       w-screen h-screen
+//   //       bg-slate-950 text-slate-200
+//   //       divide-x divide-slate-600 divide-y-0"
+//   //   >
+//   //     <button
+//   //       onClick={() => {
+//   //         localStorage.removeItem("uuid");
+//   //         router.replace("/");
+//   //       }}
+//   //     >
+//   //       Logout
+//   //     </button>
+
+//   //     {/* overflow-hidden hides the scroll that appears when accordian is clicked */}
+//   //     <div
+//   //       id="infoContainer"
+//   //       className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"
+//   //     >
+//   //       {/* Stores Shadcn UI Accordians and scrolls when there is a lot of content. */}
+//   //       <div id="channelContainer" className="h-[90%]">
+//   //         <Button className="w-full" onClick={collapseInfoContainer}>
+//   //           <ArrowRight />
+//   //         </Button>
+
+//   //         <ScrollArea className="h-full w-full rounded-md">
+//   //           <Accordion type="multiple" className="w-full bg-[#06227D]">
+//   //             {/* Like Discord channels, group chats for a specific topic */}
+//   //             <AccordianItems accordTriggerName="Rooms">
+//   //               <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
+//   //                 # Class1
+//   //               </Button>
+//   //               <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
+//   //                 # Class2
+//   //               </Button>
+//   //             </AccordianItems>
+
+//   //             {/*
+//   //                       Based off Slack Direct Messages, two-person chats that people can individually talk with each other
+//   //                       within the Space.
+//   //                       */}
+//   //             <AccordianItems accordTriggerName="Direct Messages (DMs)">
+//   //               <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
+//   //                 <div>
+//   //                   <Avatar>
+//   //                     <AvatarImage src="https://is.gd/az39r7" alt="@shadcn" />
+//   //                     <AvatarFallback>CN</AvatarFallback>
+//   //                   </Avatar>
+//   //                 </div>
+//   //                 <div>
+//   //                   <p>
+//   //                     <b>Lorem Ipsum</b>
+//   //                   </p>
+//   //                 </div>
+//   //               </Button>
+
+//   //               <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
+//   //                 <div>
+//   //                   <Avatar>
+//   //                     <AvatarImage src="https://is.gd/jUG71g" alt="@shadcn" />
+//   //                     <AvatarFallback>CN</AvatarFallback>
+//   //                   </Avatar>
+//   //                 </div>
+//   //                 <div>
+//   //                   <p>
+//   //                     <b>Lorem Ipsum</b>
+//   //                   </p>
+//   //                 </div>
+//   //               </Button>
+//   //             </AccordianItems>
+//   //           </Accordion>
+//   //         </ScrollArea>
+//   //       </div>
+
+//   //       <div
+//   //         id="profileContainer"
+//   //         className="flex items-center justify-center align-bottom h-[10%]"
+//   //       >
+//   //         {/*Extra feature: Could make profile information appear when profile is clicked. */}
+//   //         <div
+//   //           id="profile"
+//   //           className="flex items-stretch justify-stretch w-5/6 h-full p-3 bg-blue-950/75"
+//   //         >
+//   //           <div className="m-2">
+//   //             <Avatar>
+//   //               <AvatarImage
+//   //                 src="https://github.com/shadcn.png"
+//   //                 alt="@shadcn"
+//   //               />
+//   //               <AvatarFallback>CN</AvatarFallback>
+//   //             </Avatar>
+//   //           </div>
+//   //           <div className="m-2">
+//   //             <p>
+//   //               <b>Lorem Ipsum</b>
+//   //             </p>
+//   //           </div>
+//   //         </div>
+
+//   //         <div id="settings" className="h-full">
+//   //           {/*
+//   //                       <Button variant="secondary" className="w-full h-full bg-blue-900/75 hover:bg-blue-700/75 text-slate-200">
+//   //                           <Settings />
+//   //                       </Button>*/}
+
+//   //           <Dialog>
+//   //             <DialogTrigger asChild>
+//   //               <Button
+//   //                 variant="secondary"
+//   //                 className="w-full h-full
+//   //                               bg-blue-900/75 hover:bg-blue-700/75 text-slate-200"
+//   //               >
+//   //                 <Settings />
+//   //               </Button>
+//   //             </DialogTrigger>
+
+//   //             <DialogContent className="max-w-full w-full h-full bg-[#0D2257]/90 text-slate-200">
+//   //               <Tabs
+//   //                 defaultValue="myaccount"
+//   //                 className="flex h-screen w-[95vw]"
+//   //               >
+//   //                 <div
+//   //                   id="tabsList"
+//   //                   className="w-fit h-full border border-[#9CB3E3] rounded-md"
+//   //                 >
+//   //                   <TabsList
+//   //                     className="grid grid-row-3
+//   //                                        w-[20vw] h-auto
+//   //                                        justify-normal
+//   //                                        bg-[#16337D] text-slate-200"
+//   //                   >
+//   //                     <TabsTrigger value="myaccount">My Account</TabsTrigger>
+//   //                     <TabsTrigger value="profile">Profile</TabsTrigger>
+//   //                     <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
+//   //                   </TabsList>
+//   //                 </div>
+
+//   //                 <div id="tabsContent" className=" w-full h-full">
+//   //                   <TabsContent
+//   //                     value="myaccount"
+//   //                     className="w-full h-full m-0"
+//   //                   >
+//   //                     <Card className="w-full h-full bg-[#082261] text-slate-200">
+//   //                       <CardTitle>My Account</CardTitle>
+
+//   //                       <div className="bg-teal-700">
+//   //                         {/*Make map of repeatable code in future Link: https://sl.bing.net/5TNfKtfrsy */}
+//   //                         <div className="flex justify-between items-center w-full h-auto">
+//   //                           <div className="flex justify-start items-center">
+//   //                             <Avatar>
+//   //                               <AvatarImage src="https://github.com/shadcn.png" />
+//   //                               <AvatarFallback>CN</AvatarFallback>
+//   //                             </Avatar>
+
+//   //                             <h6>Lorem Ipsum</h6>
+//   //                           </div>
+
+//   //                           <div>
+//   //                             <Button variant="link" className="text-blue-300">
+//   //                               Edit
+//   //                             </Button>
+//   //                           </div>
+//   //                         </div>
+
+//   //                         {accountInfoDiv({
+//   //                           identifier: "Role:",
+//   //                           idObject: "Student",
+//   //                         })}
+
+//   //                         {accountInfoDiv({
+//   //                           identifier: "Phone Number:",
+//   //                           idObject: "###-###-####",
+//   //                         })}
+
+//   //                         {accountInfoDiv({
+//   //                           identifier: "Email:",
+//   //                           idObject: "Castocired54@cuvox.de",
+//   //                         })}
+//   //                       </div>
+
+//   //                       <div className="flex w-full max-w-sm items-center space-x-2 my-[5px]">
+//   //                         <Button type="submit">Change Password</Button>
+//   //                         <Input type="changePassword" placeholder="password" />
+//   //                       </div>
+
+//   //                       <div className="w-full h-auto my-60">
+//   //                         <Button className="bg-red-600">Delete Account</Button>
+//   //                       </div>
+//   //                     </Card>
+//   //                   </TabsContent>
+
+//   //                   <TabsContent value="profile" className="w-full h-full m-0">
+//   //                     <Card className="w-full h-full bg-[#082261] text-slate-200">
+//   //                       <CardTitle>Profile</CardTitle>
+
+//   //                       <div className="flex justify-center items-center w-full h-aut">
+//   //                         <div>
+//   //                           <Avatar>
+//   //                             <AvatarImage src="https://github.com/shadcn.png" />
+//   //                             <AvatarFallback>CN</AvatarFallback>
+//   //                           </Avatar>
+
+//   //                           <Button variant="link" className="text-blue-300">
+//   //                             Edit
+//   //                           </Button>
+//   //                         </div>
+//   //                       </div>
+
+//   //                       {accountInfoDiv({
+//   //                         identifier: "Role:",
+//   //                         idObject: "Student",
+//   //                       })}
+
+//   //                       {accountInfoDiv({
+//   //                         identifier: "Pronouns:",
+//   //                         idObject: "He/Her/They",
+//   //                       })}
+
+//   //                       {accountInfoDiv({
+//   //                         identifier: "First Name:",
+//   //                         idObject: "John",
+//   //                       })}
+
+//   //                       {accountInfoDiv({
+//   //                         identifier: "Last Name:",
+//   //                         idObject: "Doe",
+//   //                       })}
+
+//   //                       {accountInfoDiv({
+//   //                         identifier: "Phone Number:",
+//   //                         idObject: "###-###-####",
+//   //                       })}
+
+//   //                       {accountInfoDiv({
+//   //                         identifier: "Email:",
+//   //                         idObject: "Castocired54@cuvox.de",
+//   //                       })}
+//   //                     </Card>
+//   //                   </TabsContent>
+
+//   //                   <TabsContent
+//   //                     value="adjustments"
+//   //                     className="w-full h-full m-0"
+//   //                   >
+//   //                     <Card className="w-full h-full bg-[#082261] text-slate-200">
+//   //                       <CardTitle>Adjustments</CardTitle>
+
+//   //                       <h1>Audio: </h1>
+//   //                       <Button>Change Audio</Button>
+
+//   //                       <h1>Background Color: </h1>
+
+//   //                       <Button>Change Background Color</Button>
+//   //                     </Card>
+//   //                   </TabsContent>
+//   //                 </div>
+//   //               </Tabs>
+//   //             </DialogContent>
+//   //           </Dialog>
+//   //         </div>
+//   //       </div>
+//   //     </div>
+
+//   //     <div
+//   //       id="chatContainer"
+//   //       className="block static min-w-[50vw] w-auto h-screen bg-blue-900/75"
+//   //     >
+//   //       {" "}
+//   //       {/*bg-blue-950*/}
+//   //       <div
+//   //         id="channelInfoContainer"
+//   //         className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]"
+//   //       >
+//   //         <div className="flex items-center justify-start">
+//   //           {/* Button that collapses info container to the left */}
+//   //           <CollapseButton id={"infoContBtn"} onClick={collapseInfoContainer}>
+//   //             <MenuSquare />
+//   //           </CollapseButton>
+
+//   //           <div className="block ml-1 mr-2 text-base sm:text-lg">
+//   //             <h1># Homework Room</h1>
+//   //           </div>
+
+//   //           {/* Hide Description when screen size is small */}
+//   //           <div>
+//   //             <p className="hidden sm:block text-sm text-gray-300">
+//   //               A Short Channel Description
+//   //             </p>
+//   //           </div>
+//   //         </div>
+
+//   //         {/* Button that collapses members container to the right */}
+//   //         <CollapseButton
+//   //           id={"memberContBtn"}
+//   //           onClick={collapseMemberContainer}
+//   //         >
+//   //           <Users />
+//   //         </CollapseButton>
+//   //       </div>
+//   //       {/* Use states for content within messageContainer */}
+//   //       <div id="messageContainer" className="w-full h-[78.5vh]">
+//   //         {/* Need to figure out how to scroll down when content is added */}
+//   //         <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
+//   //           {divElements.map((element, index) => (
+//   //             <div key={index}>{element}</div>
+//   //           ))}
+//   //         </ScrollArea>
+//   //       </div>
+//   //       {/* Contains the formatting buttons and textarea that the user can submit text */}
+//   //       <div id="inputContainer" className="w-auto">
+//   //         <div
+//   //           id="formattingContainer"
+//   //           className="w-auto h-[6vh] bg-sky-950/75"
+//   //         >
+//   //           <div>
+//   //             <Separator className="mb-3" />
+
+//   //             {/* Unable to format text without using depreciated JS. Need a rich text editor. */}
+//   //             <div className="flex h-5 items-center space-x-1 text-sm">
+//   //               {/* Formatting text buttons */}
+//   //               {/*
+//   //                               <FormattingElement onClick={() => setBold(!bold)} ariaPressed={bold}>
+//   //                                   {boldSymbol}
+//   //                               </FormattingElement>
+
+//   //                               <FormattingElement onClick={() => setItalic(!italic)} ariaPressed={italic}>{italicSymbol}</FormattingElement>
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{underlineSymbol}</FormattingElement>
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{strikethroughSymbol}</FormattingElement>
+
+//   //                               {/* A line that divides buttons into groups */}{" "}
+//   //               {/*
+//   //                               <Separator orientation="vertical" />
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{linkSymbol}</FormattingElement>
+
+//   //                               <Separator orientation="vertical" />
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{listSymbol}</FormattingElement>
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{listorderedSymbol}</FormattingElement>
+
+//   //                               <Separator orientation="vertical" />
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{textquoteSymbol}</FormattingElement>
+
+//   //                               <Separator orientation="vertical" />
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{code2Symbol}</FormattingElement>
+
+//   //                               <FormattingElement onClick={function (): void {
+//   //                                   throw new Error('Function not implemented.');
+//   //                               } } ariaPressed={false}>{squarecodeSymbol}</FormattingElement>
+
+//   //                               <Separator orientation="vertical" />
+//   //                               */}
+//   //             </div>
+//   //           </div>
+//   //         </div>
+
+//   //         <Separator className="mb-0" />
+
+//   //         <div
+//   //           id="textBoxContainer"
+//   //           className="flex items-start justify-center w-auto h-fit"
+//   //         >
+//   //           {/* Redo Upload Container */}
+//   //           <div id="uploadContainer">
+//   //             <Popover>
+//   //               <PopoverTrigger asChild>
+//   //                 <Button
+//   //                   variant="secondary"
+//   //                   className="h-[8vh] bg-sky-950/75 hover:bg-blue-700/75 text-slate-200 rounded"
+//   //                 >
+//   //                   <PlusCircle />
+//   //                 </Button>
+//   //               </PopoverTrigger>
+
+//   //               <PopoverContent className="w-80 bg-[#0D2257]/90">
+//   //                 <div className="grid gap-4">
+//   //                   <div className="space-y-2 text-slate-200">
+//   //                     <h4 className="font-medium leading-none">
+//   //                       Upload a File
+//   //                     </h4>
+//   //                     <p className="text-sm text-muted-foreground">Upload ⬆️</p>
+//   //                   </div>
+
+//   //                   <div className="grid gap-2">
+//   //                     <div className="grid grid-cols-3 items-center gap-4">
+//   //                       <Dialog>
+//   //                         <DialogTrigger asChild>
+//   //                           <Button
+//   //                             variant="outline"
+//   //                             className="bg-sky-200/10 hover:bg-slate-100/[.85] text-slate-200"
+//   //                           >
+//   //                             Upload
+//   //                           </Button>
+//   //                         </DialogTrigger>
+//   //                         <DialogContent className="sm:max-w-[425px] bg-[#0D2257]/90 text-slate-200">
+//   //                           {/* DialogContent text color for close button color */}
+//   //                           <DialogHeader className="text-slate-200">
+//   //                             <DialogTitle>Upload a File</DialogTitle>
+//   //                             <DialogDescription>
+//   //                               Upload an image, file, or video.
+//   //                             </DialogDescription>
+//   //                           </DialogHeader>
+
+//   //                           <div className="grid gap-4 py-4">
+//   //                             <div className="grid grid-cols-4 items-center gap-4">
+//   //                               {/* Redo upload feature. Get Uploaded files to screen. */}
+//   //                               <Label
+//   //                                 htmlFor="picture"
+//   //                                 className="w-full bg-red-400 text-black"
+//   //                               >
+//   //                                 Picture
+//   //                               </Label>
+//   //                               <Input
+//   //                                 id="picture"
+//   //                                 type="file"
+//   //                                 className="w-[25vw] bg-green-400 text-black"
+//   //                               />
+//   //                             </div>
+//   //                           </div>
+//   //                           <DialogFooter>
+//   //                             <Button type="submit">Upload</Button>
+//   //                           </DialogFooter>
+//   //                         </DialogContent>
+//   //                       </Dialog>
+//   //                     </div>
+//   //                   </div>
+//   //                 </div>
+//   //               </PopoverContent>
+//   //             </Popover>
+//   //           </div>
+
+//   //           <div id="textContainer" className="w-screen">
+//   //             <Form {...form}>
+//   //               <form
+//   //                 onSubmit={form.handleSubmit(onSubmit)}
+//   //                 className="flex items-stretch w-full overflow-hidden"
+//   //               >
+//   //                 <FormField
+//   //                   control={form.control}
+//   //                   name="chatbox"
+//   //                   render={({ field }) => (
+//   //                     /* FormItem determines the dimensions of the textarea */
+//   //                     <FormItem className="w-full">
+//   //                       <FormControl>
+//   //                         {/* When Textarea is focused && ...field https://scrimba.com/articles/react-spread-operator/*/}
+//   //                         <Textarea
+//   //                           required
+//   //                           placeholder="Type..."
+//   //                           className="
+//   //                                       min-h-fit
+//   //                                       resize-none rounded-lg
+//   //                                       border border-slate-500
+//   //                                       bg-blue-950/75 text-slate-200
+//   //                                       focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500
+//   //                                       focus-visible:shadow-gray-600
+//   //                                       "
+//   //                           {...field}
+//   //                         />
+//   //                       </FormControl>
+
+//   //                       <FormMessage />
+//   //                     </FormItem>
+//   //                   )}
+//   //                 />
+
+//   //                 {/*
+//   //                                           `min-h-fit
+//   //                                           resize-none rounded-lg
+//   //                                           border border-slate-500
+//   //                                           bg-blue-950/75 text-slate-200
+//   //                                           focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500
+//   //                                           focus-visible:shadow-gray-600
+//   //                                           ${styles.join(' ')}`
+//   //                                       */}
+
+//   //                 <Button
+//   //                   type="submit"
+//   //                   className="h-auto bg-teal-500/80 hover:bg-blue-700/75 text-slate-200 rounded"
+//   //                 >
+//   //                   Submit
+//   //                 </Button>
+//   //               </form>
+//   //             </Form>
+//   //           </div>
+//   //         </div>
+//   //       </div>
+//   //     </div>
+
+//   //     <div
+//   //       id="memberContainer"
+//   //       className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"
+//   //     >
+//   //       {" "}
+//   //       {/*bg-blue-950*/}
+//   //       <Button className="w-full" onClick={collapseMemberContainer}>
+//   //         <ArrowLeft />
+//   //       </Button>
+//   //       <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
+//   //         <AccordianItems accordTriggerName="Members">
+//   //           <p>
+//   //             Show members including user from Profile Container. May use
+//   //             profiles from DMs.
+//   //           </p>
+//   //         </AccordianItems>
+//   //       </Accordion>
+//   //     </div>
+//   //   </div>
+//   // );
+// }

@@ -101,12 +101,20 @@ const app = new Elysia().group("/home", (app) =>
       async ({ body }) => {
         const user = jwt.verify(body.token, process.env.JWTPASS as string);
 
-        const result = await postgresPool.query(
-          "SELECT users.username AS username, users.id AS id FROM friends  INNER JOIN users ON friends.user_id1 = users.id WHERE friends.user_id1 = $1 AND friends.status = $2  UNION  SELECT *  FROM friends  INNER JOIN users ON friends.user_id2 = users.id WHERE friends.user_id2 = $1 AND friends.status = $2;",
-          [user, "Accepted"]
+        const result1 = await postgresPool.query(
+          "SELECT users.username AS username, users.id AS id FROM friends INNER JOIN users ON users.id = friends.user_id2 WHERE friends.user_id1 = $1 AND friends.status = 'Accepted'",
+          [user]
         );
+        const result2 = await postgresPool.query(
+          "SELECT users.username AS username, users.id AS id FROM friends INNER JOIN users ON users.id = friends.user_id1 WHERE friends.user_id2 = $1 AND friends.status = 'Accepted'",
+          [user]
+        );
+        // const result = await postgresPool.query(
+        //   "SELECT users.username AS username, users.id AS id FROM friends INNER JOIN users ON (friends.user_id1 = users.id OR friends.user_id2 = users.id) WHERE (friends.user_id1 = $1 OR friends.user_id2 = $1) AND friends.status = $2",
+        //   [user, "Accepted"]
+        // );
 
-        return result.rows;
+        return [...result1.rows, ...result2.rows];
       },
       {
         body: t.Object({
@@ -129,6 +137,72 @@ const app = new Elysia().group("/home", (app) =>
       {
         body: t.Object({
           token: t.String(),
+        }),
+      }
+    )
+    .post(
+      "/add-friend",
+      async ({ body, set }) => {
+        const user = jwt.verify(body.token, process.env.JWTPASS as string);
+
+        const { rows } = await postgresPool.query(
+          "SELECT id FROM users WHERE username = $1",
+          [body.username]
+        );
+
+        if (rows.length === 0) {
+          set.status = 400;
+          return "User not found.";
+        }
+
+        await postgresPool.query(
+          "INSERT INTO friends(user_id1, user_id2, status, created_at) VALUES ($1, $2, $3, $4)",
+          [user, rows[0].id, "Pending", new Date()]
+        );
+
+        return "Friend request sent!";
+      },
+      {
+        body: t.Object({
+          token: t.String(),
+          username: t.String(),
+        }),
+      }
+    )
+    .post(
+      "/get-friend-requests",
+      async ({ body }) => {
+        const user = jwt.verify(body.token, process.env.JWTPASS as string);
+
+        const { rows } = await postgresPool.query(
+          "SELECT users.id AS requester_id, users.username AS requester_name, users.school AS requester_school FROM friends INNER JOIN users ON friends.user_id1 = users.id WHERE user_id2 = $1 AND status = 'Pending'",
+          [user]
+        );
+
+        return rows;
+      },
+      {
+        body: t.Object({
+          token: t.String(),
+        }),
+      }
+    )
+    .post(
+      "/accept-friend-request",
+      async ({ body }) => {
+        const user = jwt.verify(body.token, process.env.JWTPASS as string);
+
+        await postgresPool.query(
+          "UPDATE friends SET status = 'Accepted' WHERE user_id2 = $1 AND user_id1 = $2",
+          [user, body.user_id]
+        );
+
+        return "Success";
+      },
+      {
+        body: t.Object({
+          token: t.String(),
+          user_id: t.Number(),
         }),
       }
     )
