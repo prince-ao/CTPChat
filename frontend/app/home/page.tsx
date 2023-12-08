@@ -52,7 +52,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 
-import { Plus } from 'lucide-react';
+import { Plus, Scroll } from 'lucide-react';
 import { ArrowBigRight } from 'lucide-react';
 import { ArrowBigLeft } from 'lucide-react';
 import { Settings } from 'lucide-react';
@@ -291,6 +291,384 @@ export default function Home() {
         setDivElements([...divElements, <DivElement message={input} />]);
     }
 
+    //Scholr components
+    function spaceSelector():React.JSX.Element { //
+        
+        return(
+            <div className='inline-flex justify-start w-full h-[15vh] align-top border border-red-500'>
+                <Select>
+
+                    <SelectTrigger className="w-full h-full bg-slate-800">
+                        {/* Should have a state for the name of the Space */ }
+                        <SelectValue placeholder="Space Name" />
+                    </SelectTrigger>
+
+                    <SelectContent className='bg-slate-300 z-10'>
+                        <SelectGroup>
+                            <SelectItem value="spaceInfo">Change Space Information</SelectItem>
+                            <SelectItem value="notifications">Notification Settings</SelectItem>
+                            <SelectItem value="privacy">Space Privacy Settings</SelectItem>
+                            <SelectItem value="exit" className='text-red-500'>Exit Space</SelectItem>
+                        </SelectGroup>
+                    </SelectContent>
+
+                </Select>
+
+                {/*
+                <Button id="my-next-button" className='hidden lg:block w-auto h-full bg-slate-800 border border-bg-gray-600 text-gray-300' onClick={collapseInfoContainer}>
+                    <ArrowBigRight />
+                </Button>
+                */}
+
+            </div>
+        );
+    }
+
+    function roomOfficeProfile():React.JSX.Element {
+        
+        return(
+            <div className='relative inline-flex flex-col justify-start w-full h-full align-top overflow-x-hidden overflow-y-auto z-0'>
+
+                {/* Accordian Container */ }
+                <ScrollArea>
+                    <div className='w-full h-full'>
+
+                            <Accordion type="multiple" className="w-full bg-[#06227D]">
+
+                                {accordionItems}
+
+                            </Accordion>
+                    </div>
+                </ScrollArea>
+
+                {/*Profile container*/ }
+                <div className='absolute inline-flex mt-auto bottom-0 h-auto w-full border bg-gray-500'>
+
+                    <div className='inline-flex flex-row justify-start align-center w-full h-auto'>
+
+                        {/* Profile */ }
+                        <AvatarButton src={"https://picsum.photos/200/300"} alt={"Profile Picture"} fallback="Z" content="Lorem Not Ipsum" />
+
+                        {/* Settings container: Gets smaller when in 3-colloumn desktop */ }
+                        <div className='inline-flex justify-start align-middle w-[20%] h-full bg-blue-900'>
+                            <Button className='w-full h-full'>
+                                <Settings />
+                            </Button>
+                        </div>
+
+                    </div>
+
+                </div>
+                
+            </div>
+        );
+    }
+
+    {/* Swiper slider that contains Info Container */}
+    function infoSwiperSlide():React.JSX.Element {
+        return (
+            <SwiperSlide> {/* className='md:max-w-none md:max-h-none' */}
+
+                {/* Container that stores Spaces UI, Rooms UI, and Profile UI */ }
+                <div id="infoContainer" className='static flex flex-row justify-start align-top w-full h-screen p-0 m-0' > {/* className='flex flex-row justify-start align-top w-full lg:w-[25vw] h-screen p-0 m-0' */}
+
+                    <div id="roomsContainer" className='inline-flex flex-col justify-start align-top w-full h-full p-0 m-0 bg-purple-800'>
+
+                        {spaceSelector()}
+
+                        {/* Displays Rooms, Offices, and Profile and Settings */ }
+                        {roomOfficeProfile()}
+
+                    </div>
+
+                </div>
+
+            </SwiperSlide>
+        );
+    }
+
+    function channInfoCont():React.JSX.Element {
+        return (
+            <div id="channelInfoContainer" className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]">
+                <div className="flex items-center justify-start">
+
+                    {/* Button that collapses info container to the left */ }
+
+                    {/*
+                    <CollapseButton id={"infoContBtn"} onClick={collapseInfoContainer}>
+                        <MenuSquare />
+                    </CollapseButton>
+                    */}
+
+                    <div className="block ml-1 mr-2 text-base sm:text-lg">
+                        <h1>
+                            # Homework Room
+                        </h1>
+                    </div>
+
+                    {/* Hides Description when screen size is less than 640px */ }
+                    <div>
+                        <p className="hidden sm:block text-sm text-gray-300">
+                            A Short Channel Description
+                        </p>
+                    </div>
+
+                </div>
+
+                {/* Button that collapses members container to the right */ }
+
+                {/*
+                <CollapseButton id={"memberContBtn"} onClick={collapseMemberContainer}>
+                    <Users /> 
+                </CollapseButton>
+                */}
+
+            </div>
+        );
+    }
+
+    function msgCont():React.JSX.Element {
+        return (
+            <div id="messageContainer" className="w-full h-[74.5vh] sm:h-[80vh]">
+
+                <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
+
+                {divElements.map((element, index) => (
+                    <div key={index}>{element}</div>
+                ))}
+
+                </ScrollArea>
+                
+            </div>
+        );
+    }
+
+    function inptCont():React.JSX.Element {
+        return (
+            <div id="inputContainer" className="w-full">
+
+                <Separator className="mb-0" />
+
+                <div id="textBoxContainer" className="flex items-start justify-center w-auto h-fit">
+
+                    <div id="textContainer" className="w-screen">
+                    
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-stretch w-full overflow-hidden">
+                                <FormField
+                                    control={form.control}
+                                    name="chatbox"
+                                    render={({ field }) => (
+
+                                    /* FormItem determines the dimensions of the textarea */
+                                    <FormItem className='w-full h-[11vh] sm:h-[12.5vh] border border-red-500'>
+
+                                        <FormControl>
+
+                                        {/* When Textarea is focused && ...field https://scrimba.com/articles/react-spread-operator/*/}
+                                        <Textarea
+                                            required 
+                                            placeholder="Type..."
+                                            className="
+                                            min-h-[11vh] sm:min-h-[12.5vh] 
+                                            resize-none rounded-lg 
+                                            border border-slate-500 
+                                            bg-blue-950/75 text-slate-200 
+                                            focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
+                                            focus-visible:shadow-gray-600 
+                                            "
+
+                                            
+                                            {...field}
+                                        />
+
+                                        </FormControl>
+                                        
+                                        <FormMessage />
+                                    </FormItem>
+
+                                    )}
+                                />
+
+                                <Button 
+                                type="submit" 
+                                className='h-auto bg-teal-500/80 hover:bg-blue-700/75 text-slate-200 rounded'>
+                                    Submit
+                                </Button>
+                            </form>
+                        </Form>
+                    </div>
+
+                </div>
+            </div>
+        );
+    }
+
+    {/* Swiper slider for Chat Container */}
+    function chatSwiperSlider():React.JSX.Element {
+        return (
+            <SwiperSlide>
+        
+                {/* Chat Container */ } 
+                <div id='chatContainer' className={'block static w-full h-screen bg-blue-900/75 p-0 m-0 left-0'}> {/*className={'block static w-screen lg:w-[50vw] h-screen bg-blue-900/75 p-0 m-0 left-0'} */}
+                    
+                    {channInfoCont()}
+
+                    {msgCont()}
+
+                    {/*Implementing Rich Text Editor to format text too dificult to implement at this time. */}
+
+                    {inptCont()}
+
+                </div> 
+
+            </SwiperSlide>
+        );
+    }
+
+    function membCont():React.JSX.Element {
+        return (
+            <div id="memberContainer" className="static w-full h-screen p-0 m-0 bg-blue-900/75 overflow-x-hidden overflow-y-auto"> {/*className="static w-screen lg:w-[25vw] h-screen p-0 m-0 bg-blue-900/75 overflow-x-hidden overflow-y-auto" */}
+                
+                {/*
+                <Button id="my-prev-button" className='hidden lg:block w-full' onClick={collapseMemberContainer}>
+                    <ArrowBigLeft />
+                </Button>
+                */}
+
+                <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
+                    <AccordianItems accordTriggerName="Members">
+                        
+                        <ScrollArea>
+
+                            {/*<AvatarButton src={"https://picsum.photos/200/300"} alt={"Profile Picture"} fallback="A" content="Lorem Not Ipsum" />*/}
+
+                            {avatarItems.map((item, index) => (
+                                <AvatarButton key={index} {...item} />
+                            ))}
+
+
+                        </ScrollArea>
+
+                    </AccordianItems>
+
+                </Accordion>
+
+            </div>
+        );
+    }
+
+    function membSwiperSlider():React.JSX.Element {
+        return (
+            <SwiperSlide>
+                                            
+                {membCont()}
+
+            </SwiperSlide>
+        );
+    }
+
+
+    function friendActivityContainer():React.JSX.Element {
+        return (
+            <div className='w-full h-screen bg-gray-500'>
+                <div className='inline-flex justify-evenly w-full h-fit border border-red-500'>
+                    <Button className='w-[15vw] '>
+                        Online
+                    </Button>
+
+                    <Button className='w-[10vw]'>
+                        All
+                    </Button>
+
+                    <Button className='w-[25vw]'>
+                        Friend Requests
+                    </Button>
+                </div>
+
+                
+                <div className='inline-flex flex-col w-auto h-full p-0 m-0'>
+                    <ScrollArea>
+                        {avatarItems.map((item, index) => (
+                            <AvatarButton key={index} {...item} />
+                        ))}
+                    </ScrollArea>
+                </div>
+                
+
+            </div>
+        );
+    }
+
+    const [showFriends, setShowFriends] = useState(false);
+
+    const [friendCount, setFriendCount] = useState(0);
+
+    function handleFriendClick() {
+        setFriendCount(friendCount + 1);
+    }
+
+    function friendDMContainer() {
+        return (
+            <div className='w-full h-full bg-green-500'>
+                <p>
+                    ads
+                </p>
+            </div>
+        );
+    }
+
+    const [showDM, setShowDM] = useState(false);
+
+    function friendCont():React.JSX.Element {
+        return(
+            <div className='flex flex-row w-full h-full bg-blue-500'>
+                <div className='inline-flex flex-col w-fit border border-red-500'>
+
+                    <Button onClick={() => {setShowFriends(true); setShowDM(false);}} className='w-[25vw]'>
+                        Friends
+                    </Button>
+
+                    <ScrollArea>
+                        
+                        <div className='flex flex-col w-auto h-full'>
+                            <Button onClick={handleFriendClick} className='justify-between w-[25vw] h-[15vh]'>
+                                <span>DMs</span>
+                                <Plus />
+                            </Button>
+
+                            {friendCount > 0 && (
+                            <div className='flex flex-col w-auto h-full'>
+                                {Array.from({ length: friendCount }, (_, index) => (
+                                    <Button key={index} onClick={() => {setShowDM(true); setShowFriends(false);}} className='w-[25vw] h-auto'>
+                                        <div>
+                                            <p>
+                                                Added Friend {index}
+                                            </p>
+                                        </div>
+                                    </Button>
+                                ))}
+                            </div>
+                            )}
+                        </div>
+
+                    </ScrollArea>
+
+
+                </div>
+
+                <div className='inline-flex w-[80%] h-full border border-green-500'>
+
+                    { showFriends && friendActivityContainer() }
+
+                    { showDM && friendDMContainer() }
+
+                </div>
+
+            </div>
+        );
+    }
+    
     return (
 
         <div 
@@ -299,6 +677,27 @@ export default function Home() {
         bg-slate-950 text-slate-300
         divide-x divide-slate-600 divide-y-0'
         >
+
+            <div id="spacesContainer" className='flex w-fit h-full p-0 m-0 bg-violet-500'>
+
+                <ScrollArea className='w-[20vw] sm:w-[10vw] md:w-[7vw] lg:w-[5vw] h-screen border border-neutral-500'>
+
+                    {/* Opens friend Direct Messages (DMs) */ /* Activate friendCont state from Logo Button*/ }
+                    <Button className='w-full h-auto p-1 text-center'>
+                        Logo!
+                    </Button>
+
+                    {addSpace}
+
+                    <Button onClick={() => setSpaceCount(spaceCount + 1)} className='w-[20vw] sm:w-[10vw] md:w-[7vw] lg:w-[5vw] h-[20vh] sm:h-[10vh] md:h-[7vh] lg:h-[5vh] rounded-full font-bold'>
+                        <Plus />
+                    </Button>
+
+                </ScrollArea>
+
+            </div>
+
+            {friendCont()}
             
             {/*
                 Swiper React Components may be depreciated in future updates.
@@ -316,271 +715,37 @@ export default function Home() {
                 Solution 2: 
                 Disable swiping when min-width is 1024px or greater.
                 Resort to old UI similar to Discord.
-            */}
+            */} {/*
             <Swiper
             enabled={true}
             preventInteractionOnTransition={true}
             spaceBetween={50}
             slidesPerView={1}
-            navigation={true} // /*false*/ /*{ nextEl: '#my-next-button', prevEl: '#my-prev-button' }*/
+            navigation={true} // /*false*/ /*{ nextEl: '#my-next-button', prevEl: '#my-prev-button' }*/ /*
             pagination={{ clickable: true }}
             modules={[Navigation]}
             
             /*
             breakpoints={{
                 1024: {
-                  spaceBetween: 0,
-                  slidesPerView: 3,
+                spaceBetween: 0,
+                slidesPerView: 3,
                 },
-              }}
-              */
+            }}
+            */ /*
             
             >
 
                 
-                <SwiperSlide> {/* className='md:max-w-none md:max-h-none' */}
+                {infoSwiperSlide()}
 
-                    {/* Container that stores Spaces UI, Rooms UI, and Profile UI */ }
-                    <div id="infoContainer" className='static flex flex-row justify-start align-top w-full h-screen p-0 m-0' > {/* className='flex flex-row justify-start align-top w-full lg:w-[25vw] h-screen p-0 m-0' */}
+                {chatSwiperSlider()}
 
-                        <div id="spacesContainer" className='inline-flex w-fit h-full p-0 m-0 bg-violet-500'>
-
-                            <ScrollArea className='w-[20vw] sm:w-[10vw] md:w-[7vw] lg:w-[5vw] h-screen border border-neutral-500'>
-
-                                {/* Opens friend Direct Messages (DMs) */ }
-                                <Button className='w-full h-auto p-1 text-center'>
-                                    Logo!
-                                </Button>
-
-                                {addSpace}
-
-                                <Button onClick={() => setSpaceCount(spaceCount + 1)} className='w-[20vw] sm:w-[10vw] md:w-[7vw] lg:w-[5vw] h-[20vh] sm:h-[10vh] md:h-[7vh] lg:h-[5vh] rounded-full font-bold'>
-                                    <Plus />
-                                </Button>
-
-                            </ScrollArea>
-                            
-                        </div>
-
-                        <div id="roomsContainer" className='inline-flex flex-col justify-start align-top w-full h-full p-0 m-0 bg-purple-800'>
-
-                            <div className='inline-flex justify-start w-full h-[15vh] align-top border border-red-500'>
-                                <Select>
-
-                                    <SelectTrigger className="w-full h-full bg-slate-800">
-                                        {/* Should have a state for the name of the Space */ }
-                                        <SelectValue placeholder="Space Name" />
-                                    </SelectTrigger>
-
-                                    <SelectContent className='bg-slate-300 z-10'>
-                                        <SelectGroup>
-                                            <SelectItem value="spaceInfo">Change Space Information</SelectItem>
-                                            <SelectItem value="notifications">Notification Settings</SelectItem>
-                                            <SelectItem value="privacy">Space Privacy Settings</SelectItem>
-                                            <SelectItem value="exit" className='text-red-500'>Exit Space</SelectItem>
-                                        </SelectGroup>
-                                    </SelectContent>
-
-                                </Select>
-
-                                {/*
-                                <Button id="my-next-button" className='hidden lg:block w-auto h-full bg-slate-800 border border-bg-gray-600 text-gray-300' onClick={collapseInfoContainer}>
-                                    <ArrowBigRight />
-                                </Button>
-                                */}
-
-                            </div>
-
-                            {/* Displays Rooms, Offices, and Profile and Settings */ }
-                            <div className='relative inline-flex flex-col justify-start w-full h-full align-top overflow-x-hidden overflow-y-auto z-0'>
-
-                                {/* Accordian Container */ }
-                                <ScrollArea>
-                                    <div className='w-full h-full'>
-
-                                            <Accordion type="multiple" className="w-full bg-[#06227D]">
-
-                                                {accordionItems}
-
-                                            </Accordion>
-                                    </div>
-                                </ScrollArea>
-
-                                {/*Profile container*/ }
-                                <div className='absolute inline-flex mt-auto bottom-0 h-auto w-full border bg-gray-500'>
-
-                                    <div className='inline-flex flex-row justify-start align-center w-full h-auto'>
-
-                                        {/* Profile */ }
-                                        <AvatarButton src={"https://picsum.photos/200/300"} alt={"Profile Picture"} fallback="Z" content="Lorem Not Ipsum" />
-
-                                        {/* Settings container: Gets smaller when in 3-colloumn desktop */ }
-                                        <div className='inline-flex justify-start align-middle w-[20%] h-full bg-blue-900'>
-                                            <Button className='w-full h-full'>
-                                                <Settings />
-                                            </Button>
-                                        </div>
-
-                                    </div>
-
-                                </div>
-                                
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </SwiperSlide>
-
-                <SwiperSlide>
-            
-                    {/* Chat Container */ } 
-                    <div id='chatContainer' className={'block static w-screen h-screen bg-blue-900/75 p-0 m-0 left-0'}> {/*className={'block static w-screen lg:w-[50vw] h-screen bg-blue-900/75 p-0 m-0 left-0'} */}
-                        <div id="channelInfoContainer" className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]">
-                            <div className="flex items-center justify-start">
-
-                                {/* Button that collapses info container to the left */ }
-
-                                {/*
-                                <CollapseButton id={"infoContBtn"} onClick={collapseInfoContainer}>
-                                    <MenuSquare />
-                                </CollapseButton>
-                                */}
-
-                                <div className="block ml-1 mr-2 text-base sm:text-lg">
-                                    <h1>
-                                        # Homework Room
-                                    </h1>
-                                </div>
-
-                                {/* Hides Description when screen size is less than 640px */ }
-                                <div>
-                                    <p className="hidden sm:block text-sm text-gray-300">
-                                        A Short Channel Description
-                                    </p>
-                                </div>
-
-                            </div>
-
-                            {/* Button that collapses members container to the right */ }
-
-                            {/*
-                            <CollapseButton id={"memberContBtn"} onClick={collapseMemberContainer}>
-                                <Users /> 
-                            </CollapseButton>
-                            */}
-
-                        </div>
-
-                        <div id="messageContainer" className="w-full h-[74.5vh] sm:h-[80vh]">
-
-                            <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
-
-                            {divElements.map((element, index) => (
-                                <div key={index}>{element}</div>
-                            ))}
-
-                            </ScrollArea>
-                            
-                        </div>
-
-                        {/*Implementing Rich Text Editor to format text too dificult to implement at this time. */}
-
-                        <div id="inputContainer" className="w-full">
-
-                            <Separator className="mb-0" />
-
-                            <div id="textBoxContainer" className="flex items-start justify-center w-auto h-fit">
-
-                                <div id="textContainer" className="w-screen">
-                                
-                                    <Form {...form}>
-                                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-stretch w-full overflow-hidden">
-                                            <FormField
-                                                control={form.control}
-                                                name="chatbox"
-                                                render={({ field }) => (
-
-                                                /* FormItem determines the dimensions of the textarea */
-                                                <FormItem className='w-full h-[11vh] sm:h-[12.5vh] border border-red-500'>
-
-                                                    <FormControl>
-
-                                                    {/* When Textarea is focused && ...field https://scrimba.com/articles/react-spread-operator/*/}
-                                                    <Textarea
-                                                        required 
-                                                        placeholder="Type..."
-                                                        className="
-                                                        min-h-[11vh] sm:min-h-[12.5vh] 
-                                                        resize-none rounded-lg 
-                                                        border border-slate-500 
-                                                        bg-blue-950/75 text-slate-200 
-                                                        focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
-                                                        focus-visible:shadow-gray-600 
-                                                        "
-
-                                                        
-                                                        {...field}
-                                                    />
-
-                                                    </FormControl>
-                                                    
-                                                    <FormMessage />
-                                                </FormItem>
-
-                                                )}
-                                            />
-
-                                            <Button 
-                                            type="submit" 
-                                            className='h-auto bg-teal-500/80 hover:bg-blue-700/75 text-slate-200 rounded'>
-                                                Submit
-                                            </Button>
-                                        </form>
-                                    </Form>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div> 
-
-                </SwiperSlide>
-
-                <SwiperSlide>
-                                                
-                    <div id="memberContainer" className="static w-screen h-screen p-0 m-0 bg-blue-900/75 overflow-x-hidden overflow-y-auto"> {/*className="static w-screen lg:w-[25vw] h-screen p-0 m-0 bg-blue-900/75 overflow-x-hidden overflow-y-auto" */}
-                        
-                        {/*
-                        <Button id="my-prev-button" className='hidden lg:block w-full' onClick={collapseMemberContainer}>
-                            <ArrowBigLeft />
-                        </Button>
-                        */}
-
-                        <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
-                            <AccordianItems accordTriggerName="Members">
-                                
-                                <ScrollArea>
-
-                                    {/*<AvatarButton src={"https://picsum.photos/200/300"} alt={"Profile Picture"} fallback="A" content="Lorem Not Ipsum" />*/}
-
-                                    {avatarItems.map((item, index) => (
-                                        <AvatarButton key={index} {...item} />
-                                    ))}
-
-
-                                </ScrollArea>
-
-                            </AccordianItems>
-
-                        </Accordion>
-
-                    </div>
-
-                </SwiperSlide>
+                {membSwiperSlider()}
 
             </Swiper>
+
+        */}
                                     
         </div>
     );
