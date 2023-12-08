@@ -273,6 +273,7 @@ export default function Home() {
   interface Friend {
     username: string;
     id: number;
+    online: boolean;
   }
 
   interface UserInfo {
@@ -291,6 +292,16 @@ export default function Home() {
   interface StateRoute {
     route: Routes;
     sub_route?: string;
+    chat_id?: number;
+    chat_name?: string;
+  }
+
+  interface Message {
+    user_from: number;
+    message_text: string;
+    sent_at: Date;
+    friend_id: number;
+    username: string;
   }
 
   type Routes = "FRIEND_INFO" | "ADD_FRIEND" | "DIRECT_MESSAGE";
@@ -305,10 +316,46 @@ export default function Home() {
   });
   const [friendRequest, setFriendRequest] = useState("");
   const [friendRequestStatus, setFriendRequestStatus] = useState("");
+  const [ws, setWs] = useState<WebSocket | undefined>();
+  const [divElements, setDivElements] = useState<React.JSX.Element[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [textArea, setTextArea] = useState<string>("");
+  const [curFriendId, setCurFriendId] = useState<number>();
 
   const router = useRouter();
 
   useEffect(() => {
+    const ws_temp = new WebSocket("ws://localhost:8008/ws");
+    setWs(ws_temp);
+
+    ws_temp.onopen = () => {
+      ws_temp.send(
+        JSON.stringify({ type: "open", token: localStorage.getItem("uuid") })
+      );
+    };
+
+    ws_temp.onmessage = (message) => {
+      console.log(message.data);
+
+      const data = JSON.parse(message.data);
+
+      switch (data.type) {
+        case "poolLeave":
+          console.log("yes");
+          friends.map(({ id, username, online }) => {
+            const rightUser = username === data.user;
+            return {
+              id,
+              username,
+              online: rightUser ? false : online,
+            };
+          });
+          break;
+        case "message":
+          setMessages(JSON.parse(data.message));
+      }
+    };
+
     (async () => {
       const spaces = await fetch("http://localhost:8008/v1/home/get-spaces", {
         method: "POST",
@@ -357,10 +404,20 @@ export default function Home() {
       setUserInfo(await user_info.json());
       setFriendRequests(await friend_requests.json());
     })();
+
     if (localStorage.getItem("uuid") === null) {
       router.replace("/");
     }
+
+    return () => {
+      ws_temp.close();
+      setWs(undefined);
+    };
   }, []);
+
+  useEffect(() => {
+    console.log(messages);
+  }, [messages]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -368,15 +425,25 @@ export default function Home() {
     }, 2e3);
   }, [friendRequestStatus]);
 
+  useEffect(() => {
+    setTextArea("");
+  }, [rightSideRoute]);
+
   return (
     <main className="flex">
       <div className=" border-e-2 border-black min-h-screen">
-        <button>friends</button>
+        <button
+          onClick={() =>
+            setRightSideRoute({ route: "FRIEND_INFO", sub_route: "All" })
+          }
+        >
+          friends
+        </button>
         {spaces.map(({ space_name, space_id }) => (
           <button key={space_id}>{space_name}</button>
         ))}
       </div>
-      <div>
+      <div className="w-[500px]">
         <button
           className="bg-green-600"
           onClick={() => setRightSideRoute({ route: "ADD_FRIEND" })}
@@ -384,9 +451,47 @@ export default function Home() {
           Add friend
         </button>
         <h2>Direct Message</h2>
-        <div className="flex">
-          {friends.map(({ id, username }) => (
-            <button key={id}>{username}</button>
+        <div className="flex flex-col">
+          {friends.map(({ id, username, online }) => (
+            <button
+              key={id}
+              onClick={async () => {
+                setRightSideRoute({
+                  route: "DIRECT_MESSAGE",
+                  chat_id: id,
+                  chat_name: username,
+                });
+
+                const messages = await fetch(
+                  "http://localhost:8008/v1/home/get-friend-messages",
+                  {
+                    method: "POST",
+                    body: JSON.stringify({
+                      token: localStorage.getItem("uuid"),
+                      user_id: id,
+                    }),
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+                const parsed_messages = await messages.json();
+
+                ws?.send(
+                  JSON.stringify({
+                    type: "join-direct",
+                    direct_id: parsed_messages.friend_id,
+                    token: localStorage.getItem("uuid"),
+                  })
+                );
+
+                setCurFriendId(parsed_messages.friend_id);
+
+                setMessages(parsed_messages.messages);
+              }}
+            >
+              {username} {/*| ({online ? "online" : "offline"})*/}
+            </button>
           ))}
         </div>
         <div className="flex">
@@ -402,6 +507,15 @@ export default function Home() {
             <p>{userInfo.length > 0 && userInfo[0].school}</p>
           </div>
         </div>
+        <button
+          onClick={() => {
+            ws!.close(1000, localStorage.getItem("uuid")!);
+            localStorage.removeItem("uuid");
+            router.replace("/");
+          }}
+        >
+          Logout
+        </button>
       </div>
 
       {rightSideRoute.route === "ADD_FRIEND" ? (
@@ -526,16 +640,535 @@ export default function Home() {
           )}
         </div>
       ) : (
-        <div></div>
+        <div
+          className="flex items-center justify-center
+         h-screen
+        bg-slate-950 text-slate-200
+        divide-x divide-slate-600 divide-y-0"
+        >
+          {/* overflow-hidden hides the scroll that appears when accordian is clicked */}
+          {/* <div
+            id="infoContainer"
+            className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"
+          >
+            {/* Stores Shadcn UI Accordians and scrolls when there is a lot of content. }
+            <div id="channelContainer" className="h-[90%]">
+              <Button className="w-full" onClick={collapseInfoContainer}>
+                <ArrowRight />
+              </Button>
+
+              <ScrollArea className="h-full w-full rounded-md">
+                <Accordion type="multiple" className="w-full bg-[#06227D]">
+                  {/* Like Discord channels, group chats for a specific topic }
+                  <AccordianItems accordTriggerName="Rooms">
+                    <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
+                      # Class1
+                    </Button>
+                    <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
+                      # Class2
+                    </Button>
+                  </AccordianItems>
+
+                  {/*
+                        Based off Slack Direct Messages, two-person chats that people can individually talk with each other
+                        within the Space.
+                        }
+                  <AccordianItems accordTriggerName="Direct Messages (DMs)">
+                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
+                      <div>
+                        <Avatar>
+                          <AvatarImage
+                            src="https://is.gd/az39r7"
+                            alt="@shadcn"
+                          />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <div>
+                        <p>
+                          <b>Lorem Ipsum</b>
+                        </p>
+                      </div>
+                    </Button>
+
+                    <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
+                      <div>
+                        <Avatar>
+                          <AvatarImage
+                            src="https://is.gd/jUG71g"
+                            alt="@shadcn"
+                          />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                      </div>
+                      <div>
+                        <p>
+                          <b>Lorem Ipsum</b>
+                        </p>
+                      </div>
+                    </Button>
+                  </AccordianItems>
+                </Accordion>
+              </ScrollArea>
+            </div>
+
+            <div
+              id="profileContainer"
+              className="flex items-center justify-center align-bottom h-[10%]"
+            >
+              {/*Extra feature: Could make profile information appear when profile is clicked. }
+              <div
+                id="profile"
+                className="flex items-stretch justify-stretch w-5/6 h-full p-3 bg-blue-950/75"
+              >
+                <div className="m-2">
+                  <Avatar>
+                    <AvatarImage
+                      src="https://github.com/shadcn.png"
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
+                </div>
+                <div className="m-2">
+                  <p>
+                    <b>Lorem Ipsum</b>
+                  </p>
+                </div>
+              </div>
+
+              <div id="settings" className="h-full">
+                {/*
+                        <Button variant="secondary" className="w-full h-full bg-blue-900/75 hover:bg-blue-700/75 text-slate-200">
+                            <Settings />
+                        </Button>*/}
+
+          {/* <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="secondary"
+                      className="w-full h-full
+                                bg-blue-900/75 hover:bg-blue-700/75 text-slate-200"
+                    >
+                      <Settings />
+                    </Button>
+                  </DialogTrigger>
+
+                  <DialogContent className="max-w-full w-full h-full bg-[#0D2257]/90 text-slate-200">
+                    <Tabs
+                      defaultValue="myaccount"
+                      className="flex h-screen w-[95vw]"
+                    >
+                      <div
+                        id="tabsList"
+                        className="w-fit h-full border border-[#9CB3E3] rounded-md"
+                      >
+                        <TabsList
+                          className="grid grid-row-3
+                                         w-[20vw] h-auto
+                                         justify-normal
+                                         bg-[#16337D] text-slate-200"
+                        >
+                          <TabsTrigger value="myaccount">
+                            My Account
+                          </TabsTrigger>
+                          <TabsTrigger value="profile">Profile</TabsTrigger>
+                          <TabsTrigger value="adjustments">
+                            Adjustments
+                          </TabsTrigger>
+                        </TabsList>
+                      </div>
+
+                      <div id="tabsContent" className=" w-full h-full">
+                        <TabsContent
+                          value="myaccount"
+                          className="w-full h-full m-0"
+                        >
+                          <Card className="w-full h-full bg-[#082261] text-slate-200">
+                            <CardTitle>My Account</CardTitle>
+
+                            <div className="bg-teal-700">
+                              {/*Make map of repeatable code in future Link: https://sl.bing.net/5TNfKtfrsy }
+                              <div className="flex justify-between items-center w-full h-auto">
+                                <div className="flex justify-start items-center">
+                                  <Avatar>
+                                    <AvatarImage src="https://github.com/shadcn.png" />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                  </Avatar>
+
+                                  <h6>Lorem Ipsum</h6>
+                                </div>
+
+                                <div>
+                                  <Button
+                                    variant="link"
+                                    className="text-blue-300"
+                                  >
+                                    Edit
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {accountInfoDiv({
+                                identifier: "Role:",
+                                idObject: "Student",
+                              })}
+
+                              {accountInfoDiv({
+                                identifier: "Phone Number:",
+                                idObject: "###-###-####",
+                              })}
+
+                              {accountInfoDiv({
+                                identifier: "Email:",
+                                idObject: "Castocired54@cuvox.de",
+                              })}
+                            </div>
+
+                            <div className="flex w-full max-w-sm items-center space-x-2 my-[5px]">
+                              <Button type="submit">Change Password</Button>
+                              <Input
+                                type="changePassword"
+                                placeholder="password"
+                              />
+                            </div>
+
+                            <div className="w-full h-auto my-60">
+                              <Button className="bg-red-600">
+                                Delete Account
+                              </Button>
+                            </div>
+                          </Card>
+                        </TabsContent>
+
+                        <TabsContent
+                          value="profile"
+                          className="w-full h-full m-0"
+                        >
+                          <Card className="w-full h-full bg-[#082261] text-slate-200">
+                            <CardTitle>Profile</CardTitle>
+
+                            <div className="flex justify-center items-center w-full h-aut">
+                              <div>
+                                <Avatar>
+                                  <AvatarImage src="https://github.com/shadcn.png" />
+                                  <AvatarFallback>CN</AvatarFallback>
+                                </Avatar>
+
+                                <Button
+                                  variant="link"
+                                  className="text-blue-300"
+                                >
+                                  Edit
+                                </Button>
+                              </div>
+                            </div>
+
+                            {accountInfoDiv({
+                              identifier: "Role:",
+                              idObject: "Student",
+                            })}
+
+                            {accountInfoDiv({
+                              identifier: "Pronouns:",
+                              idObject: "He/Her/They",
+                            })}
+
+                            {accountInfoDiv({
+                              identifier: "First Name:",
+                              idObject: "John",
+                            })}
+
+                            {accountInfoDiv({
+                              identifier: "Last Name:",
+                              idObject: "Doe",
+                            })}
+
+                            {accountInfoDiv({
+                              identifier: "Phone Number:",
+                              idObject: "###-###-####",
+                            })}
+
+                            {accountInfoDiv({
+                              identifier: "Email:",
+                              idObject: "Castocired54@cuvox.de",
+                            })}
+                          </Card>
+                        </TabsContent>
+
+                        <TabsContent
+                          value="adjustments"
+                          className="w-full h-full m-0"
+                        >
+                          <Card className="w-full h-full bg-[#082261] text-slate-200">
+                            <CardTitle>Adjustments</CardTitle>
+
+                            <h1>Audio: </h1>
+                            <Button>Change Audio</Button>
+
+                            <h1>Background Color: </h1>
+
+                            <Button>Change Background Color</Button>
+                          </Card>
+                        </TabsContent>
+                      </div>
+                    </Tabs>
+                  </DialogContent>
+                </Dialog> }
+              </div>
+            </div>
+          </div> */}
+
+          <div
+            id="chatContainer"
+            className="block static min-w-[50vw] w-auto h-screen bg-blue-900/75"
+          >
+            {" "}
+            {/*bg-blue-950*/}
+            <div
+              id="channelInfoContainer"
+              className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]"
+            >
+              <div className="flex items-center justify-start">
+                {/* Button that collapses info container to the left */}
+                {/* <CollapseButton
+                  id={"infoContBtn"}
+                  onClick={collapseInfoContainer}
+                >
+                  <MenuSquare />
+                </CollapseButton> */}
+
+                <div className="block ml-1 mr-2 ms-3 text-base sm:text-lg">
+                  <h1>{rightSideRoute.chat_name}</h1>
+                </div>
+              </div>
+
+              {/* Button that collapses members container to the right */}
+              <CollapseButton
+                id={"memberContBtn"}
+                onClick={collapseMemberContainer}
+              >
+                <Users />
+              </CollapseButton>
+            </div>
+            {/* Use states for content within messageContainer */}
+            <div id="messageContainer" className="w-full h-[78.5vh]">
+              {/* Need to figure out how to scroll down when content is added */}
+              <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
+                {messages &&
+                  messages.map(({ message_text, username }, i) => (
+                    <>
+                      <h3 className="font-bold">{username}</h3>
+                      <p className="ms-2" key={i}>
+                        {message_text}
+                      </p>
+                    </>
+                  ))}
+              </ScrollArea>
+            </div>
+            {/* Contains the formatting buttons and textarea that the user can submit text */}
+            <div id="inputContainer" className="w-auto">
+              <div
+                id="formattingContainer"
+                className="w-auto h-[6vh] bg-sky-950/75"
+              >
+                <div>
+                  <Separator className="mb-3" />
+
+                  {/* Unable to format text without using depreciated JS. Need a rich text editor. */}
+                  <div className="flex h-5 items-center space-x-1 text-sm">
+                    {/* Formatting text buttons */}
+                    {/*
+                                <FormattingElement onClick={() => setBold(!bold)} ariaPressed={bold}>
+                                    {boldSymbol}
+                                </FormattingElement>
+
+                                <FormattingElement onClick={() => setItalic(!italic)} ariaPressed={italic}>{italicSymbol}</FormattingElement>
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{underlineSymbol}</FormattingElement>
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{strikethroughSymbol}</FormattingElement>
+
+                                {/* A line that divides buttons into groups */}{" "}
+                    {/*
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{linkSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{listSymbol}</FormattingElement>
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{listorderedSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{textquoteSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{code2Symbol}</FormattingElement>
+
+                                <FormattingElement onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                } } ariaPressed={false}>{squarecodeSymbol}</FormattingElement>
+
+                                <Separator orientation="vertical" />
+                                */}
+                  </div>
+                </div>
+              </div>
+
+              <Separator className="mb-0" />
+
+              <div
+                id="textBoxContainer"
+                className="flex items-start justify-center w-auto h-fit"
+              >
+                {/* Redo Upload Container */}
+                <div id="uploadContainer">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="secondary"
+                        className="h-[8vh] bg-sky-950/75 hover:bg-blue-700/75 text-slate-200 rounded"
+                      >
+                        <PlusCircle />
+                      </Button>
+                    </PopoverTrigger>
+
+                    <PopoverContent className="w-80 bg-[#0D2257]/90">
+                      <div className="grid gap-4">
+                        <div className="space-y-2 text-slate-200">
+                          <h4 className="font-medium leading-none">
+                            Upload a File
+                          </h4>
+                          <p className="text-sm text-muted-foreground">
+                            Upload ⬆️
+                          </p>
+                        </div>
+
+                        <div className="grid gap-2">
+                          <div className="grid grid-cols-3 items-center gap-4">
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className="bg-sky-200/10 hover:bg-slate-100/[.85] text-slate-200"
+                                >
+                                  Upload
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px] bg-[#0D2257]/90 text-slate-200">
+                                {/* DialogContent text color for close button color */}
+                                <DialogHeader className="text-slate-200">
+                                  <DialogTitle>Upload a File</DialogTitle>
+                                  <DialogDescription>
+                                    Upload an image, file, or video.
+                                  </DialogDescription>
+                                </DialogHeader>
+
+                                <div className="grid gap-4 py-4">
+                                  <div className="grid grid-cols-4 items-center gap-4">
+                                    {/* Redo upload feature. Get Uploaded files to screen. */}
+                                    <Label
+                                      htmlFor="picture"
+                                      className="w-full bg-red-400 text-black"
+                                    >
+                                      Picture
+                                    </Label>
+                                    <Input
+                                      id="picture"
+                                      type="file"
+                                      className="w-[25vw] bg-green-400 text-black"
+                                    />
+                                  </div>
+                                </div>
+                                <DialogFooter>
+                                  <Button type="submit">Upload</Button>
+                                </DialogFooter>
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        </div>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div id="textContainer" className="w-screen">
+                  <Textarea
+                    required
+                    placeholder="Type..."
+                    className="
+                        min-h-fit
+                        resize-none rounded-lg
+                        border border-slate-500
+                        bg-blue-950/75 text-slate-200
+                        focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500
+                        focus-visible:shadow-gray-600
+                        "
+                    onChange={(e) => setTextArea(e.target.value)}
+                    value={textArea}
+                  />
+                  <button
+                    onClick={() => {
+                      ws?.send(
+                        JSON.stringify({
+                          type: "send",
+                          token: localStorage.getItem("uuid"),
+                          direct_id: curFriendId,
+                          message: textArea,
+                        })
+                      );
+                      setTextArea("");
+                    }}
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="memberContainer"
+            className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"
+          >
+            {" "}
+            {/*bg-blue-950*/}
+            <Button className="w-full" onClick={collapseMemberContainer}>
+              <ArrowLeft />
+            </Button>
+            <Accordion
+              type="single"
+              collapsible
+              className="w-auto bg-[#06227D]"
+            >
+              <AccordianItems accordTriggerName="Members">
+                <p>
+                  Show members including user from Profile Container. May use
+                  profiles from DMs.
+                </p>
+              </AccordianItems>
+            </Accordion>
+          </div>
+        </div>
       )}
-      <button
-        onClick={() => {
-          localStorage.removeItem("uuid");
-          router.replace("/");
-        }}
-      >
-        Logout
-      </button>
     </main>
   );
 }

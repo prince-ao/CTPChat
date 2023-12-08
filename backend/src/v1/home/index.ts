@@ -10,74 +10,6 @@ import jwt from "jsonwebtoken";
 
 const app = new Elysia().group("/home", (app) =>
   app
-    .ws("/", {
-      message(ws, message) {
-        const parsed_message = JSON.parse(message as string);
-        const user = jwt.verify(
-          parsed_message.token,
-          process.env.JWTPASS as string
-        );
-        switch (parsed_message.type) {
-          case "open":
-            onlinePool.add(user);
-            break;
-
-          case "send":
-            if (parsed_message.room_id) {
-              postgresPool.query(
-                "INSERT INTO messages(user_from, message_text, room_id, updated_at, sent_at) VALUES ($1, $2, $3, $4, $5)",
-                [
-                  user,
-                  parsed_message.message,
-                  parsed_message.room_id,
-                  new Date(),
-                  new Date(),
-                ]
-              );
-
-              if (spaceMapping.has(parsed_message.room_id)) {
-                for (const x of spaceMapping.get(parsed_message.room_id)) {
-                  (x as typeof ws).send(parsed_message.message);
-                }
-              }
-            } else {
-              postgresPool.query(
-                "INSERT INTO messages(user_from, message_text, friend_id, updated_at, sent_at) VALUES ($1, $2, $3, $4, $5)",
-                [
-                  user,
-                  parsed_message.message,
-                  parsed_message.direct_id,
-                  new Date(),
-                  new Date(),
-                ]
-              );
-
-              if (friendMapping.has(parsed_message.direct_id)) {
-                for (const x of friendMapping.get(parsed_message.direct_id)) {
-                  (x as typeof ws).send(parsed_message.message);
-                }
-              }
-            }
-            break;
-
-          case "join":
-            if (!spaceMapping.has(parsed_message.room_id)) {
-              spaceMapping.set(parsed_message.room_id, new Set());
-            }
-            const spaceOnline = spaceMapping.get(parsed_message.room_id);
-            spaceOnline.add(ws);
-            break;
-
-          case "join-direct":
-            if (!friendMapping.has(parsed_message.direct_id)) {
-              friendMapping.set(parsed_message.direct_id, new Set());
-            }
-            const friendOnline = friendMapping.get(parsed_message.room_id);
-            friendOnline.add(ws);
-            break;
-        }
-      },
-    })
     .post(
       "/get-spaces",
       async ({ body }) => {
@@ -114,7 +46,13 @@ const app = new Elysia().group("/home", (app) =>
         //   [user, "Accepted"]
         // );
 
-        return [...result1.rows, ...result2.rows];
+        return [...result1.rows, ...result2.rows].map((query) => {
+          return {
+            username: query.username,
+            id: query.id,
+            online: onlinePool.has(String(query.id)),
+          };
+        });
       },
       {
         body: t.Object({
@@ -203,6 +141,52 @@ const app = new Elysia().group("/home", (app) =>
         body: t.Object({
           token: t.String(),
           user_id: t.Number(),
+        }),
+      }
+    )
+    .post(
+      "/get-friend-messages",
+      async ({ body }) => {
+        const user = jwt.verify(body.token, process.env.JWTPASS as string);
+
+        // get friend_id of the two friends
+        const { rows } = await postgresPool.query(
+          "SELECT id FROM friends WHERE (user_id1 = $1 AND user_id2 = $2) OR (user_id1 = $2 AND user_id2 = $1)",
+          [user, body.user_id]
+        );
+
+        // get messages
+        const messages = await postgresPool.query(
+          "SELECT messages.user_from AS user_from, messages.message_text AS message_text, messages.friend_id AS friend_id, messages.sent_at AS sent_at, users.username AS username FROM messages INNER JOIN users ON users.id = messages.user_from WHERE friend_id = $1 ORDER BY messages.sent_at",
+          [rows[0].id]
+        );
+
+        return { friend_id: rows[0].id, messages: messages.rows };
+      },
+      {
+        body: t.Object({
+          token: t.String(),
+          user_id: t.Number(),
+        }),
+      }
+    )
+    .post(
+      "/send-friend-message",
+      async ({ body }) => {
+        const user = jwt.verify(body.token, process.env.JWTPASS as string);
+
+        await postgresPool.query(
+          "INSERT INTO messages(user_from, message_text, friend_id, updated_at, sent_at) VALUES ($1, $2, $3, $4, $4)",
+          [user, body.message, body.friend_id, new Date()]
+        );
+
+        return "Success";
+      },
+      {
+        body: t.Object({
+          token: t.String(),
+          message: t.String(),
+          friend_id: t.Number(),
         }),
       }
     )
