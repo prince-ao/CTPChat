@@ -161,6 +161,11 @@ export default function Signup() {
                   </FormItem>
                 )}
               />
+
+              {/*
+                  Insert checkboxes for user to agree to privacy policy and terms of service
+              */}
+
               <p className="!mt-2">
                 Have an account?{" "}
                 <Link href="/login" className="text-blue-600">

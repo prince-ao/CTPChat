@@ -1,52 +1,46 @@
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+
 'use client';
+import React from 'react';
 import { useState, useEffect } from 'react';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/swiper-bundle.css';
+
+import SwiperCore from 'swiper';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+SwiperCore.use([Navigation]);
+
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-  } from "@/components/ui/accordion";
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+} from "@/components/ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-  } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card";
-  import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-  } from "@/components/ui/tabs";
-  import {
     Form,
     FormControl,
     FormDescription,
@@ -54,113 +48,60 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-  } from "@/components/ui/form";
-  import { Bold } from "lucide-react";
-  import { Italic } from "lucide-react";
-  import { Underline } from "lucide-react";
-  import { Strikethrough } from 'lucide-react';
-  import { Link } from "lucide-react";
-  import { List } from 'lucide-react';
-  import { ListOrdered } from 'lucide-react';
-  import { TextQuote } from 'lucide-react';
-  import { Code2 } from 'lucide-react';
-  import { SquareCode } from 'lucide-react';
-  import { Users } from 'lucide-react';
-  import { PlusCircle } from 'lucide-react';
-  import { Settings } from 'lucide-react';
-  import { ArrowRight } from 'lucide-react';
-  import { ArrowLeft } from 'lucide-react';
-  import { Toggle } from "@/components/ui/toggle";
-  import { Input } from "@/components/ui/input";
-  import { Label } from "@/components/ui/label";
-  import { MenuSquare } from 'lucide-react';
-import { info } from 'console';
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
 
-  //Create functions to seperate sections to reduce amount of code within return statement.
 
-    //Displays a div that contains account information and a button to edit that data.
-    function accountInfoDiv(props: {identifier: string, idObject: string}) {
+import { Plus } from 'lucide-react';
+import { ArrowBigRight } from 'lucide-react';
+import { ArrowBigLeft } from 'lucide-react';
+import { Settings } from 'lucide-react';
+import { MenuSquare } from 'lucide-react';
+import { Users } from 'lucide-react';
 
-        return (
-            <div className='flex justify-between items-center w-full h-auto'>
-                <div className='flex justify-start items-center'>
-                    <h6 className='mr-1'>{props.identifier}</h6>
-                    <h6>{props.idObject}</h6>
-                </div>
+export default function Home() {
 
-                <div>
-                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                </div>
-            </div>
-        );
-    }
+    const [spaceCount, setSpaceCount] = useState(0);
 
-    /*
-    function collapseContainer() {
-        
-        const infoCont = document.getElementById('infoContainer') as HTMLElement;
-        const membCont = document.getElementById('memberContainer') as HTMLElement;
+    const addSpace = Array.from({ length: spaceCount }, (_, i) => (
+        <Button key={i} className='w-full h-auto p-1 m-0 rounded-full'>
+            <img src="https://picsum.photos/200/300" alt="Image" className='w-fit h-auto rounded-full justify-center align-middle' />
+        </Button>
+    ));
 
-        const chatCont = document.getElementById('chatContainer') as HTMLElement;
+    const [roomCount, setRoomCount] = useState(0);
 
-        const infoDisplaySetting = getComputedStyle(infoCont).display;
-        const membDisplaySetting = getComputedStyle(membCont).display;
+    const addRoom = Array.from({ length: roomCount }, (_, i) => (
+        <Button key={i} className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
+            i
+        </Button>
+    ));
 
-        chatCont.style.width = 'inherit';
+    const [officeCount, setOfficeCount] = useState(0);
 
-        if(infoDisplaySetting == 'block') {
-            infoCont.style.display = 'none';
-        } else {
-            infoCont.style.display = 'block';
-        }
+    const addOffice = Array.from({ length: officeCount }, (_, i) => (
+        <Button key={i} className="w-full justify-start rounded-none bg-[#072998] text-slate-200">
+            i
+        </Button>
+    ));
 
-        if(membDisplaySetting == 'block') {
-            membCont.style.display = 'none';
-        } else {
-            membCont.style.display = 'block';
-        }
-
-    }
-    */
-
-    //Have to get the whole inforContainer to modify with react states.
-    function collapseInfoContainer() {
-        
-        const infoCont = document.getElementById('infoContainer') as HTMLElement;
-
-        const chatCont = document.getElementById('chatContainer') as HTMLElement;
-
-        //const displaySetting = infoCont.style.display;
-        const displaySetting = window.getComputedStyle(infoCont).getPropertyValue('display');
-
-        if(displaySetting == 'block') {
-            infoCont.style.display = 'none';
-        } else {
-            infoCont.style.display = 'block';
-        }
-
-        chatCont.style.width = 'inherit';
-
-    }
-
-    function collapseMemberContainer() {
-        
-        const membCont = document.getElementById('memberContainer') as HTMLElement;
-
-        const chatCont = document.getElementById('chatContainer') as HTMLElement;
-
-        //const displaySetting = infoCont.style.display;
-        const displaySetting = window.getComputedStyle(membCont).getPropertyValue('display');
-
-        if(displaySetting == 'block') {
-            membCont.style.display = 'none';
-        } else {
-            membCont.style.display = 'block';
-        }
-
-        chatCont.style.width = 'inherit';
-
-    }
+    const items = [
+        { value: "item-1", text: "Rooms", onClick: () => setRoomCount(roomCount + 1), buttonText: "Add Room", },
+        { value: "item-2", text: "Offices", onClick: () => setOfficeCount(officeCount + 1), buttonText: "Add Office" },
+    ];
+    
+    const accordionItems = items.map((item) => (
+        <AccordionItem key={item.value} value={item.value}>
+            <AccordionTrigger>{item.text}</AccordionTrigger>
+            <AccordionContent>
+            <Button onClick={item.onClick} className='inline-flex justify-between align-middle text-center w-full px-2 tracking-wide'>
+                <p>{item.buttonText}</p>
+                <Plus/>
+            </Button>
+            {item.text === "Rooms"? addRoom : addOffice}
+            </AccordionContent>
+        </AccordionItem>
+    ));
 
     //interface to insert Shadcn UI accordian children props/elements
     interface accordItemsProps {
@@ -186,29 +127,110 @@ import { info } from 'console';
         );
     }
 
-    /*
-    //Function that creates formatting text buttons with lucide-react symbols as button text
-    interface formattingProps {
-        children: React.JSX.Element;
-        onClick: () => void;
-        ariaPressed: boolean;
-      }
+    //interface to insert Shadcn UI Avatar children props/elements
+    interface avatarItemsProps {
+        src: string;
+        alt: string;
+        fallback: string;
+        content: React.JSX.Element[] | string;
+    }
 
-    function FormattingElement({ children, onClick, ariaPressed }: formattingProps) {
+    function AvatarButton({src, alt, fallback, content}:avatarItemsProps) {
+        return (
+            <Button className="inline-flex items-center justify-stretch w-full h-full bg-blue-950/75">
+              <div className="m-2">
+                <Avatar>
+                  <AvatarImage src={src} alt={alt} />
+                  <AvatarFallback>{fallback}</AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="m-2">
+                <p>
+                  <b>{content}</b>
+                </p>
+              </div>
+            </Button>
+          );
+    }
+
+    const avatarItems: avatarItemsProps[] = [
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "A", content: "Lorem Not Ipsum"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "B", content: "Dolor Sit Amet"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "C", content: "Consectetur Adipiscing Elit"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "D", content: "Sed Do Eiusmod Tempor Incididunt"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "E", content: "Ut Labore Et Dolore Magna Aliqua"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "F", content: "Enim Ad Minim Veniam"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "G", content: "Quis Nostrud Exercitation Ullamco Laboris"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "H", content: "Nisi Ut Aliquip Ex Ea Commodo Consequat"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "I", content: "Duis Aute Irure Dolor In Reprehenderit In Voluptate"},
+        {src: "https://picsum.photos/200/300", alt: "Profile Picture", fallback: "J", content: "Velit Esse Cillum Dolore Eu Fugiat Nulla Pariatur"},
+      ];
+
+    //Old Collapse Buttons. May need to change later.
+    function collapseInfoContainer() {
+
+        const infoCont = document.getElementById('infoContainer') as HTMLElement;
+
+        const chatCont = document.getElementById('chatContainer') as HTMLElement;
+
+        //const displaySetting = infoCont.style.display;
+        const displaySetting = window.getComputedStyle(infoCont).getPropertyValue('display');
+
+        if(displaySetting == 'flex') {
+            infoCont.style.display = 'none';
+        } else {
+            infoCont.style.display = 'flex';
+        }
+
+        chatCont.style.width = 'inherit';
+    }
+
+    function collapseMemberContainer() {
+        
+        const membCont = document.getElementById('memberContainer') as HTMLElement;
+
+        const chatCont = document.getElementById('chatContainer') as HTMLElement;
+
+        //const displaySetting = infoCont.style.display;
+        const displaySetting = window.getComputedStyle(membCont).getPropertyValue('display');
+
+        if(displaySetting == 'flex') {
+            membCont.style.display = 'none';
+        } else {
+            membCont.style.display = 'flex';
+        }
+
+        chatCont.style.width = 'inherit';
+
+    }
+
+    interface collapseBtnProps {
+        children: React.JSX.Element;
+        id: string;
+        onClick: () => void;
+    }
+
+    //Creates the collapse buttons within middle chat container
+    function CollapseButton({children, id, onClick}:collapseBtnProps) {
+        const [ID, setID] = useState(id);
+
+        useEffect(() => {
+            setID(id);
+        }, [id]);
 
         return (
-            <div>
-                <Toggle 
-                aria-pressed={ariaPressed} 
-                aria-label="Toggle" 
-                onClick={onClick}
+            <div className="mr-1">
+                <Button
+                    variant="secondary" 
+                    id={id}
+                    className="hidden lg:block bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
+                    onClick={onClick}
                 >
                     {children}
-                </Toggle>
+                </Button>
             </div>
         );
     }
-    */
 
     //Creates the UI for the text that is going to be displayed after user hits the submit button
     function DivElement({ message }: { message: string }) {
@@ -244,36 +266,6 @@ import { info } from 'console';
         );
     }
 
-    interface collapseBtnProps {
-        children: React.JSX.Element;
-        id: string;
-        onClick: () => void;
-    }
-
-    //Creates the collapse buttons within middle chat container
-    function CollapseButton({children, id, onClick}:collapseBtnProps) {
-        const [ID, setID] = useState(id);
-
-        useEffect(() => {
-            setID(id);
-        }, [id]);
-
-        return (
-            <div className="mr-1">
-                <Button
-                    variant="secondary" 
-                    id={id}
-                    className="bg-indigo-900 hover:bg-indigo-700 text-slate-200" 
-                    onClick={onClick}
-                > 
-                    {children}
-                </Button>
-            </div>
-        );
-    }
-
-export default function Home() {
-
     const [divElements, setDivElements] = useState<React.JSX.Element[]>([]);
 
     /*Message expands textarea past div height*/
@@ -299,511 +291,297 @@ export default function Home() {
         setDivElements([...divElements, <DivElement message={input} />]);
     }
 
-    /*
-    const [bold, setBold] = useState(false);
-    const [italic, setItalic] = useState(false);
-    const [underline, setUnderline] = useState(false);
-    const [strikethrough, setStrikethrough] = useState(false);
-
-    const styles: string[] = [];
-    if (bold) styles.push('font-bold');
-    if (italic) styles.push('italic');
-    if (underline) styles.push('underline');
-    if (strikethrough) styles.push('line-through');
-
-    //Text Formatting Symbols
-    const boldSymbol = <Bold className="h-4 w-4" />;
-    const italicSymbol = <Italic className="h-4 w-4" />;
-    const underlineSymbol = <Underline className="h-4 w-4" />;
-    const strikethroughSymbol = <Strikethrough className="h-4 w-4" />;
-    const linkSymbol = <Link className="h-4 w-4" />;
-    const listSymbol = <List className="h-4 w-4"/>;
-    const listorderedSymbol = <ListOrdered className="h-4 w-4"/>;
-    const textquoteSymbol = <TextQuote className="h-4 w-4"/>;
-    const code2Symbol = <Code2 className="h-4 w-4"/>;
-    const squarecodeSymbol = <SquareCode className="h-4 w-4"/>;
-    */
-
     return (
+
         <div 
-        className="flex items-center justify-center
+        className='flex items-center justify-center
         w-screen h-screen
-        bg-slate-950 text-slate-200 
-        divide-x divide-slate-600 divide-y-0"
+        bg-slate-950 text-slate-300
+        divide-x divide-slate-600 divide-y-0'
         >
+            
+            {/*
+                Swiper React Components may be depreciated in future updates.
+                However, latest Swiper Elements are not compatible with Next.js and React.
+                Produces TypeScript error with difficult work-arounds but no bug fixes from developers yet:
+                https://github.com/nolimits4web/swiper/issues/6466
 
-            {/* overflow-hidden hides the scroll that appears when accordian is clicked */}
-            <div id="infoContainer" className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden">
+                Solution 1:
+                Providing Shadcn UI Button functionality by displaying the 
+                chat container if in info container, hides info container and member container.
+                chat container if in member container, hides info container and member container.
+                and info container or member container if in chat container. 
+                Hides info container or member container, and chat container.
 
-                {/* Stores Shadcn UI Accordians and scrolls when there is a lot of content. */}
-                <div id="channelContainer" className="h-[90%]">
-                    <Button className='w-full' onClick={collapseInfoContainer}><ArrowRight /></Button>
+                Solution 2: 
+                Disable swiping when min-width is 1024px or greater.
+                Resort to old UI similar to Discord.
+            */}
+            <Swiper
+            enabled={true}
+            preventInteractionOnTransition={true}
+            spaceBetween={50}
+            slidesPerView={1}
+            navigation={true} // /*false*/ /*{ nextEl: '#my-next-button', prevEl: '#my-prev-button' }*/
+            pagination={{ clickable: true }}
+            modules={[Navigation]}
+            
+            /*
+            breakpoints={{
+                1024: {
+                  spaceBetween: 0,
+                  slidesPerView: 3,
+                },
+              }}
+              */
+            
+            >
 
-                    <ScrollArea className="h-full w-full rounded-md">
-                        <Accordion type="multiple" className="w-full bg-[#06227D]">
-
-                        {/* Like Discord channels, group chats for a specific topic */}
-                        <AccordianItems accordTriggerName="Rooms">
-                            <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200"># Class1</Button>
-                            <Button className="w-full justify-start rounded-none bg-[#072998] text-slate-200"># Class2</Button>
-                        </AccordianItems>
-
-                        {/* 
-                        Based off Slack Direct Messages, two-person chats that people can individually talk with each other
-                        within the Space.
-                        */}
-                        <AccordianItems accordTriggerName="Direct Messages (DMs)">
-                            <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
-                                <div>
-                                    <Avatar>
-                                        <AvatarImage src="https://is.gd/az39r7" alt="@shadcn" />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                </div>
-                                <div>
-                                    <p>
-                                        <b>Lorem Ipsum</b>
-                                    </p>
-                                </div>
-                            </Button>
-
-                            <Button className="w-full justify-start rounded-sm bg-[#103BA7] text-slate-200">
-                                <div>
-                                    <Avatar>
-                                        <AvatarImage src="https://is.gd/jUG71g" alt="@shadcn" />
-                                        <AvatarFallback>CN</AvatarFallback>
-                                    </Avatar>
-                                </div>
-                                <div>
-                                    <p>
-                                        <b>Lorem Ipsum</b>
-                                    </p>
-                                </div>
-                            </Button>
-                        </AccordianItems>
-
-                        </Accordion>
-                    </ScrollArea>
-                </div>
-
-                <div id="profileContainer" className="flex items-center justify-center align-bottom h-[10%]">
-
-                    {/*Extra feature: Could make profile information appear when profile is clicked. */}
-                    <div id="profile" className="flex items-stretch justify-stretch w-5/6 h-full p-3 bg-blue-950/75">
-                        <div className="m-2">
-                            <Avatar>
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-                                <AvatarFallback>CN</AvatarFallback>
-                            </Avatar>
-                        </div>
-                        <div className="m-2">
-                            <p>
-                                <b>Lorem Ipsum</b>
-                            </p>
-                        </div>
-                    </div>
-
-                    <div id="settings" className="h-full">
-                        {/*
-                        <Button variant="secondary" className="w-full h-full bg-blue-900/75 hover:bg-blue-700/75 text-slate-200">
-                            <Settings />
-                        </Button>*/
-                        }
-
-                        <Dialog>
-
-                            <DialogTrigger asChild>
-                                <Button 
-                                variant="secondary" 
-                                className="w-full h-full
-                                bg-blue-900/75 hover:bg-blue-700/75 text-slate-200"
-                                >
-                                    <Settings />
-                                </Button>
-                            </DialogTrigger>
-
-                            <DialogContent className="max-w-full w-full h-full bg-[#0D2257]/90 text-slate-200">
-                                <Tabs defaultValue="myaccount" className='flex h-screen w-[95vw]'>
-
-                                    <div id="tabsList" className="w-fit h-full border border-[#9CB3E3] rounded-md">
-                                        <TabsList className="grid grid-row-3
-                                         w-[20vw] h-auto
-                                         justify-normal 
-                                         bg-[#16337D] text-slate-200"
-                                         >
-                                            <TabsTrigger value="myaccount">My Account</TabsTrigger>
-                                            <TabsTrigger value="profile">Profile</TabsTrigger>
-                                            <TabsTrigger value="adjustments">Adjustments</TabsTrigger>
-                                        </TabsList>
-                                    </div>
-
-                                    <div id="tabsContent" className=" w-full h-full">
-                                        <TabsContent value="myaccount" className="w-full h-full m-0">
-                                            <Card className='w-full h-full bg-[#082261] text-slate-200'>
-
-                                                <CardTitle>My Account</CardTitle>
-
-                                                <div className='bg-teal-700'>
-                                                    
-                                                    {/*Make map of repeatable code in future Link: https://sl.bing.net/5TNfKtfrsy */}
-                                                    <div className='flex justify-between items-center w-full h-auto'>
-                                                        <div className='flex justify-start items-center'>
-                                                            <Avatar>
-                                                                <AvatarImage src="https://github.com/shadcn.png" />
-                                                                <AvatarFallback>CN</AvatarFallback>
-                                                            </Avatar>
-
-                                                            <h6>Lorem Ipsum</h6>
-                                                        </div>
-
-                                                        <div>
-                                                            <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                        </div>
-
-                                                    </div>
-
-                                                    {accountInfoDiv({identifier: 'Role:', idObject: 'Student'})}
-
-                                                    {accountInfoDiv({identifier: 'Phone Number:', idObject: '###-###-####'})}
-
-                                                    {accountInfoDiv({identifier: 'Email:', idObject: 'Castocired54@cuvox.de'})}
-
-                                                </div>
-
-                                                <div className="flex w-full max-w-sm items-center space-x-2 my-[5px]">
-                                                    <Button type="submit">Change Password</Button>
-                                                    <Input type="changePassword" placeholder="password" />
-                                                </div>
-
-                                                <div className='w-full h-auto my-60'>
-                                                    <Button className='bg-red-600'>Delete Account</Button>
-                                                </div>
-                                            
-                                            </Card>
-                                        </TabsContent>
-
-                                        <TabsContent value="profile" className="w-full h-full m-0">
-                                            <Card className='w-full h-full bg-[#082261] text-slate-200'>
-
-                                            <CardTitle>Profile</CardTitle>
-
-                                            <div className='flex justify-center items-center w-full h-aut'>
-                                                <div>
-                                                    <Avatar>
-                                                        <AvatarImage src="https://github.com/shadcn.png" />
-                                                        <AvatarFallback>CN</AvatarFallback>
-                                                    </Avatar>
-
-                                                    <Button variant="link" className='text-blue-300'>Edit</Button>
-                                                </div>
-
-                                            </div>
-
-                                            {accountInfoDiv({identifier: 'Role:', idObject: 'Student'})}
-
-                                            {accountInfoDiv({identifier: 'Pronouns:', idObject: 'He/Her/They'})}
-
-                                            {accountInfoDiv({identifier: 'First Name:', idObject: 'John'})}
-
-                                            {accountInfoDiv({identifier: 'Last Name:', idObject: 'Doe'})}
-
-                                            {accountInfoDiv({identifier: 'Phone Number:', idObject: '###-###-####'})}
-
-                                            {accountInfoDiv({identifier: 'Email:', idObject: 'Castocired54@cuvox.de'})}
-                                            
-                                            </Card>
-                                        </TabsContent>
-
-                                        <TabsContent value="adjustments" className="w-full h-full m-0">
-                                            <Card className='w-full h-full bg-[#082261] text-slate-200'>
-
-                                            <CardTitle>Adjustments</CardTitle>
-
-                                            <h1>Audio: </h1>
-                                            <Button>Change Audio</Button>
-
-                                            <h1>Background Color: </h1>
-
-                                            <Button>Change Background Color</Button>
-
-                                            </Card>
-                                        </TabsContent>
-
-                                    </div>
-
-                                </Tabs>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div id="chatContainer" className="block static min-w-[50vw] w-auto h-screen bg-blue-900/75"> {/*bg-blue-950*/}
-
-                <div id="channelInfoContainer" className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]">
-                    <div className="flex items-center justify-start">
-
-                        {/* Button that collapses info container to the left */}
-                        <CollapseButton id={"infoContBtn"} onClick={collapseInfoContainer}>
-                            <MenuSquare />
-                        </CollapseButton>
-
-                        <div className="block ml-1 mr-2 text-base sm:text-lg">
-                            <h1>
-                                # Homework Room
-                            </h1>
-                        </div>
-
-                        {/* Hide Description when screen size is small */}
-                        <div>
-                            <p className="hidden sm:block text-sm text-gray-300">
-                                A Short Channel Description
-                            </p>
-                        </div>
-
-                    </div>
-
-                    {/* Button that collapses members container to the right */}
-                    <CollapseButton id={"memberContBtn"} onClick={collapseMemberContainer}>
-                        <Users /> 
-                    </CollapseButton>
-
-                </div>
-
-                {/* Use states for content within messageContainer */}
-                <div id="messageContainer" className="w-full h-[78.5vh]">
-
-                    {/* Need to figure out how to scroll down when content is added */}
-                    <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
-
-                    {divElements.map((element, index) => (
-                        <div key={index}>{element}</div>
-                    ))}
-
-                    </ScrollArea>
-                    
-                </div>
                 
-                {/* Contains the formatting buttons and textarea that the user can submit text */}
-                <div id="inputContainer" className="w-auto">
+                <SwiperSlide> {/* className='md:max-w-none md:max-h-none' */}
 
-                    <div id="formattingContainer" className="w-auto h-[6vh] bg-sky-950/75">
+                    {/* Container that stores Spaces UI, Rooms UI, and Profile UI */ }
+                    <div id="infoContainer" className='static flex flex-row justify-start align-top w-full h-screen p-0 m-0' > {/* className='flex flex-row justify-start align-top w-full lg:w-[25vw] h-screen p-0 m-0' */}
 
-                        <div>
+                        <div id="spacesContainer" className='inline-flex w-fit h-full p-0 m-0 bg-violet-500'>
 
-                            <Separator className="mb-3" />
+                            <ScrollArea className='w-[20vw] sm:w-[10vw] md:w-[7vw] lg:w-[5vw] h-screen border border-neutral-500'>
 
-                            {/* Unable to format text without using depreciated JS. Need a rich text editor. */}
-                            <div className="flex h-5 items-center space-x-1 text-sm">
+                                {/* Opens friend Direct Messages (DMs) */ }
+                                <Button className='w-full h-auto p-1 text-center'>
+                                    Logo!
+                                </Button>
 
-                                {/* Formatting text buttons */}
+                                {addSpace}
+
+                                <Button onClick={() => setSpaceCount(spaceCount + 1)} className='w-[20vw] sm:w-[10vw] md:w-[7vw] lg:w-[5vw] h-[20vh] sm:h-[10vh] md:h-[7vh] lg:h-[5vh] rounded-full font-bold'>
+                                    <Plus />
+                                </Button>
+
+                            </ScrollArea>
+                            
+                        </div>
+
+                        <div id="roomsContainer" className='inline-flex flex-col justify-start align-top w-full h-full p-0 m-0 bg-purple-800'>
+
+                            <div className='inline-flex justify-start w-full h-[15vh] align-top border border-red-500'>
+                                <Select>
+
+                                    <SelectTrigger className="w-full h-full bg-slate-800">
+                                        {/* Should have a state for the name of the Space */ }
+                                        <SelectValue placeholder="Space Name" />
+                                    </SelectTrigger>
+
+                                    <SelectContent className='bg-slate-300 z-10'>
+                                        <SelectGroup>
+                                            <SelectItem value="spaceInfo">Change Space Information</SelectItem>
+                                            <SelectItem value="notifications">Notification Settings</SelectItem>
+                                            <SelectItem value="privacy">Space Privacy Settings</SelectItem>
+                                            <SelectItem value="exit" className='text-red-500'>Exit Space</SelectItem>
+                                        </SelectGroup>
+                                    </SelectContent>
+
+                                </Select>
+
                                 {/*
-                                <FormattingElement onClick={() => setBold(!bold)} ariaPressed={bold}>
-                                    {boldSymbol}
-                                </FormattingElement>
-
-                                <FormattingElement onClick={() => setItalic(!italic)} ariaPressed={italic}>{italicSymbol}</FormattingElement>
-
-                                
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{underlineSymbol}</FormattingElement>
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{strikethroughSymbol}</FormattingElement>
-
-                                {/* A line that divides buttons into groups */} {/*
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{linkSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{listSymbol}</FormattingElement>
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{listorderedSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{textquoteSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{code2Symbol}</FormattingElement>
-
-                                <FormattingElement onClick={function (): void {
-                                    throw new Error('Function not implemented.');
-                                } } ariaPressed={false}>{squarecodeSymbol}</FormattingElement>
-
-                                <Separator orientation="vertical" />
+                                <Button id="my-next-button" className='hidden lg:block w-auto h-full bg-slate-800 border border-bg-gray-600 text-gray-300' onClick={collapseInfoContainer}>
+                                    <ArrowBigRight />
+                                </Button>
                                 */}
 
+                            </div>
+
+                            {/* Displays Rooms, Offices, and Profile and Settings */ }
+                            <div className='relative inline-flex flex-col justify-start w-full h-full align-top overflow-x-hidden overflow-y-auto z-0'>
+
+                                {/* Accordian Container */ }
+                                <ScrollArea>
+                                    <div className='w-full h-full'>
+
+                                            <Accordion type="multiple" className="w-full bg-[#06227D]">
+
+                                                {accordionItems}
+
+                                            </Accordion>
+                                    </div>
+                                </ScrollArea>
+
+                                {/*Profile container*/ }
+                                <div className='absolute inline-flex mt-auto bottom-0 h-auto w-full border bg-gray-500'>
+
+                                    <div className='inline-flex flex-row justify-start align-center w-full h-auto'>
+
+                                        {/* Profile */ }
+                                        <AvatarButton src={"https://picsum.photos/200/300"} alt={"Profile Picture"} fallback="Z" content="Lorem Not Ipsum" />
+
+                                        {/* Settings container: Gets smaller when in 3-colloumn desktop */ }
+                                        <div className='inline-flex justify-start align-middle w-[20%] h-full bg-blue-900'>
+                                            <Button className='w-full h-full'>
+                                                <Settings />
+                                            </Button>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                                
                             </div>
 
                         </div>
 
                     </div>
 
-                    <Separator className="mb-0" />
+                </SwiperSlide>
 
-                    <div id="textBoxContainer" className="flex items-start justify-center w-auto h-fit">
+                <SwiperSlide>
+            
+                    {/* Chat Container */ } 
+                    <div id='chatContainer' className={'block static w-screen h-screen bg-blue-900/75 p-0 m-0 left-0'}> {/*className={'block static w-screen lg:w-[50vw] h-screen bg-blue-900/75 p-0 m-0 left-0'} */}
+                        <div id="channelInfoContainer" className="flex items-center justify-between w-auto h-[14vh] sm:h-[7vh] bg-[#3718A7]">
+                            <div className="flex items-center justify-start">
 
-                        {/* Redo Upload Container */}
-                        <div id="uploadContainer">
-                            <Popover>
+                                {/* Button that collapses info container to the left */ }
+
+                                {/*
+                                <CollapseButton id={"infoContBtn"} onClick={collapseInfoContainer}>
+                                    <MenuSquare />
+                                </CollapseButton>
+                                */}
+
+                                <div className="block ml-1 mr-2 text-base sm:text-lg">
+                                    <h1>
+                                        # Homework Room
+                                    </h1>
+                                </div>
+
+                                {/* Hides Description when screen size is less than 640px */ }
+                                <div>
+                                    <p className="hidden sm:block text-sm text-gray-300">
+                                        A Short Channel Description
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            {/* Button that collapses members container to the right */ }
+
+                            {/*
+                            <CollapseButton id={"memberContBtn"} onClick={collapseMemberContainer}>
+                                <Users /> 
+                            </CollapseButton>
+                            */}
+
+                        </div>
+
+                        <div id="messageContainer" className="w-full h-[74.5vh] sm:h-[80vh]">
+
+                            <ScrollArea className="w-auto h-full rounded-md border border-slate-500 scroll-smooth">
+
+                            {divElements.map((element, index) => (
+                                <div key={index}>{element}</div>
+                            ))}
+
+                            </ScrollArea>
+                            
+                        </div>
+
+                        {/*Implementing Rich Text Editor to format text too dificult to implement at this time. */}
+
+                        <div id="inputContainer" className="w-full">
+
+                            <Separator className="mb-0" />
+
+                            <div id="textBoxContainer" className="flex items-start justify-center w-auto h-fit">
+
+                                <div id="textContainer" className="w-screen">
                                 
-                                <PopoverTrigger asChild>
-                                    <Button
-                                    variant="secondary"
-                                    className="h-[8vh] bg-sky-950/75 hover:bg-blue-700/75 text-slate-200 rounded"
-                                    > 
-                                        <PlusCircle /> 
-                                    </Button>
-                                </PopoverTrigger>
+                                    <Form {...form}>
+                                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-stretch w-full overflow-hidden">
+                                            <FormField
+                                                control={form.control}
+                                                name="chatbox"
+                                                render={({ field }) => (
 
-                                <PopoverContent className="w-80 bg-[#0D2257]/90">
-                                    <div className="grid gap-4">
+                                                /* FormItem determines the dimensions of the textarea */
+                                                <FormItem className='w-full h-[11vh] sm:h-[12.5vh] border border-red-500'>
 
-                                        <div className="space-y-2 text-slate-200">
-                                            <h4 className="font-medium leading-none">Upload a File</h4>
-                                            <p className="text-sm text-muted-foreground">
-                                            Upload ⬆️
-                                            </p>
-                                        </div>
+                                                    <FormControl>
 
-                                        <div className="grid gap-2">
-                                            
-                                            
-                                            <div className="grid grid-cols-3 items-center gap-4">
-                                                <Dialog>
-                                                    <DialogTrigger asChild>
-                                                        <Button
-                                                        variant="outline" 
-                                                        className="bg-sky-200/10 hover:bg-slate-100/[.85] text-slate-200">
-                                                            Upload
-                                                        </Button>
-                                                    </DialogTrigger>
-                                                    <DialogContent 
-                                                    className="sm:max-w-[425px] bg-[#0D2257]/90 text-slate-200">
-                                                        {/* DialogContent text color for close button color */}
-                                                        <DialogHeader className="text-slate-200">
-                                                            <DialogTitle>Upload a File</DialogTitle>
-                                                            <DialogDescription>
-                                                            Upload an image, file, or video.
-                                                            </DialogDescription>
-                                                        </DialogHeader>
+                                                    {/* When Textarea is focused && ...field https://scrimba.com/articles/react-spread-operator/*/}
+                                                    <Textarea
+                                                        required 
+                                                        placeholder="Type..."
+                                                        className="
+                                                        min-h-[11vh] sm:min-h-[12.5vh] 
+                                                        resize-none rounded-lg 
+                                                        border border-slate-500 
+                                                        bg-blue-950/75 text-slate-200 
+                                                        focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
+                                                        focus-visible:shadow-gray-600 
+                                                        "
 
-                                                    <div className="grid gap-4 py-4">
-                                                        <div className="grid grid-cols-4 items-center gap-4">
-                                                        {/* Redo upload feature. Get Uploaded files to screen. */}
-                                                        <Label htmlFor="picture" className='w-full bg-red-400 text-black'>Picture</Label>
-                                                        <Input id="picture" type="file" className='w-[25vw] bg-green-400 text-black'/>
+                                                        
+                                                        {...field}
+                                                    />
 
-                                                        </div>
-                                                    </div>
-                                                        <DialogFooter>
-                                                            <Button type="submit">Upload</Button>
-                                                        </DialogFooter>
-                                                    </DialogContent>
-                                                </Dialog>
-                                            </div>
-                                        </div>
+                                                    </FormControl>
+                                                    
+                                                    <FormMessage />
+                                                </FormItem>
 
-                                    </div>
-                                </PopoverContent>
+                                                )}
+                                            />
 
-                            </Popover>
+                                            <Button 
+                                            type="submit" 
+                                            className='h-auto bg-teal-500/80 hover:bg-blue-700/75 text-slate-200 rounded'>
+                                                Submit
+                                            </Button>
+                                        </form>
+                                    </Form>
+                                </div>
+
+                            </div>
                         </div>
 
-                        <div id="textContainer" className="w-screen">
-                          
-                          <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-stretch w-full overflow-hidden">
-                              <FormField
-                                control={form.control}
-                                name="chatbox"
-                                render={({ field }) => (
+                    </div> 
 
-                                  /* FormItem determines the dimensions of the textarea */
-                                  <FormItem className='w-full'>
+                </SwiperSlide>
 
-                                    <FormControl>
+                <SwiperSlide>
+                                                
+                    <div id="memberContainer" className="static w-screen h-screen p-0 m-0 bg-blue-900/75 overflow-x-hidden overflow-y-auto"> {/*className="static w-screen lg:w-[25vw] h-screen p-0 m-0 bg-blue-900/75 overflow-x-hidden overflow-y-auto" */}
+                        
+                        {/*
+                        <Button id="my-prev-button" className='hidden lg:block w-full' onClick={collapseMemberContainer}>
+                            <ArrowBigLeft />
+                        </Button>
+                        */}
 
-                                      {/* When Textarea is focused && ...field https://scrimba.com/articles/react-spread-operator/*/}
-                                      <Textarea
-                                        required 
-                                        placeholder="Type..."
-                                        className="
-                                        min-h-fit 
-                                        resize-none rounded-lg 
-                                        border border-slate-500 
-                                        bg-blue-950/75 text-slate-200 
-                                        focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
-                                        focus-visible:shadow-gray-600 
-                                        "
+                        <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
+                            <AccordianItems accordTriggerName="Members">
+                                
+                                <ScrollArea>
 
-                                        
-                                        {...field}
-                                      />
+                                    {/*<AvatarButton src={"https://picsum.photos/200/300"} alt={"Profile Picture"} fallback="A" content="Lorem Not Ipsum" />*/}
 
-                                    </FormControl>
-                                    
-                                    <FormMessage />
-                                  </FormItem>
+                                    {avatarItems.map((item, index) => (
+                                        <AvatarButton key={index} {...item} />
+                                    ))}
 
-                                )}
-                              />
 
-                              {/*
-                                            `min-h-fit 
-                                            resize-none rounded-lg 
-                                            border border-slate-500 
-                                            bg-blue-950/75 text-slate-200 
-                                            focus-visible:ring-slate-400 focus-visible:ring-offset-blue-500 
-                                            focus-visible:shadow-gray-600 
-                                            ${styles.join(' ')}`
-                                        */}
+                                </ScrollArea>
 
-                              <Button 
-                              type="submit" 
-                              className='h-auto bg-teal-500/80 hover:bg-blue-700/75 text-slate-200 rounded'>
-                                Submit
-                              </Button>
-                            </form>
-                          </Form>
-                        </div>
+                            </AccordianItems>
+
+                        </Accordion>
 
                     </div>
-                </div>
 
-            </div>
+                </SwiperSlide>
 
-            <div id="memberContainer" className="hidden static w-[25vw] h-screen bg-blue-900/75 overflow-x-auto overflow-y-hidden"> {/*bg-blue-950*/}
-                
-                <Button className='w-full' onClick={collapseMemberContainer}><ArrowLeft /></Button>
-
-                <Accordion type="single" collapsible className="w-auto bg-[#06227D]">
-                    <AccordianItems accordTriggerName="Members">
-                        <p>Show members including user from Profile Container. May use profiles from DMs.</p>
-                    </AccordianItems>
-
-                </Accordion>
-
-            </div>
-
+            </Swiper>
+                                    
         </div>
     );
 }
