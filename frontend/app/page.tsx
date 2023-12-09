@@ -22,10 +22,10 @@ export default function Home() {
 
   return (
     /* Div for whole body */
-    <div className="flex flex-col items-stretch justify-between w-screen h-screen">
+    <div className="flex flex-col items-stretch justify-between w-screen h-screen bg-slate-300">
 
       {/* Div for navigation bar*/}
-      <div className="flex flex-col items-stretch justify-between w-screen">
+      <div className="flex flex-col items-stretch justify-between w-screen bg-slate-950 hover:bg-slate-900 shadow-2xl">
         <nav className="flex items-center justify-center h-[75px]">
 
           <div className="w-[80%] flex items-center justify-between">
@@ -33,15 +33,15 @@ export default function Home() {
             {/* a tags for self routing. Better efficiency than Link in this case. */}
             <a href="/" className="flex gap-6">
               <Image
-                src="/ctp-logo-small.png"
+                src="/Scholr_Logo.png"
                 width={60}
                 height={60}
-                alt="Picture of the author"
+                alt="Scholr Logo"
                 className="rounded-md"
               />
 
               <h1 className={orbitron.className}>
-                <span className="text-7xl font-bold">Scholr</span>
+                <span className="text-7xl text-[#20C20E] font-bold">Scholr</span>
               </h1>
             </a>
             
@@ -79,16 +79,16 @@ export default function Home() {
       Need to make all children divs be that way as well. 
       */
       }
-      <div className="w-screen mt-auto mb-auto fixed bottom-0 text-center bg-neutral-300">
+      <div className="w-screen mt-auto mb-auto fixed bottom-0 text-center bg-neutral-400 shadow-2xl">
 
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
-          <Link href="/about" prefetch={true}>
+          <Link href="/about" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             About
           </Link>
-          <Link href="/privacypolicy" prefetch={true}>
+          <Link href="/privacypolicy" prefetch={true} className="text-[#0000EE] hover:text#[0404FF] visited:text-[#551A8B]">
             Privacy Policy
           </Link>
-          <Link href="/termsofservice" prefetch={true}>
+          <Link href="/termsofservice" prefetch={true} className="text-[#0000EE] hover:text#[0404FF] visited:text-[#551A8B]">
             Terms of Service
           </Link>
         </div>

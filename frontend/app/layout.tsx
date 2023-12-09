@@ -11,11 +11,11 @@ type Author = {
 }
 
 export const metadata: Metadata = {
-  title: "CTPChat",
-  description: "An Open Source CTP Communication Platform Project",
+  title: "Scholr",
+  description: "An Innovative Open Source Communications Platform for College Students",
   authors: [{ name: 'Prince Addo', }, { name: 'Wei Jian Zhen', }], //Requires type Author
-  keywords: "CTPChat, CTP, Career Tech Prep, CUNY, cuny, communication, platform, message, messaging, service",
-  icons: "/ctp-logo.ico",
+  keywords: "College, CUNY, CTP, communication, platform, message, messaging, service",
+  icons: '/Scholr_Logo.ico',
 };
 
 export default function RootLayout({

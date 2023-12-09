@@ -8,8 +8,8 @@ export const robotoSerif = Roboto_Serif({ subsets: ['latin'] });
 
 export default function PrivacyPolicy() {
   return (
-    <div className="flex flex-col items-stretch justify-between h-[100vh] overflow-x-hidden">
-      <nav className="flex items-center justify-center h-[75px]">
+    <div className="flex flex-col items-stretch justify-between h-[100vh] bg-slate-300 overflow-x-hidden">
+      <nav className="flex items-center justify-center h-[75px] bg-slate-950 hover:bg-slate-900 shadow-2xl">
         <div className="w-[80%] flex items-center justify-between">
 
         {
@@ -21,15 +21,15 @@ export default function PrivacyPolicy() {
           <Link href="/" prefetch={true}> 
             <div className="flex items-center gap-6">
               <Image
-                src="/ctp-logo-small.png"
+                src="/Scholr_Logo.png"
                 width={60}
                 height={60}
-                alt="Picture of the author"
+                alt="Scholr Logo"
                 className="rounded-md"
               />
 
               <h1 className={orbitron.className}>
-                <span className="text-7xl font-bold">Scholr</span>
+                <span className="text-7xl text-[#20C20E] font-bold">Scholr</span>
               </h1>
 
             </div>
@@ -121,17 +121,6 @@ export default function PrivacyPolicy() {
         <p>Usage Data may include information such as Your Device's Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.</p>
         <p>When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.</p>
         <p>We may also collect information that Your browser sends whenever You visit our Service or when You access the Service by or through a mobile device.</p>
-        <h4 className="text-sm font-semibold">Information from Third-Party Social Media Services</h4>
-        <p>The Company allows You to create an account and log in to use the Service through the following Third-party Social Media Services:</p>
-        <ul>
-        <li>Google</li>
-        <li>Facebook</li>
-        <li>Instagram</li>
-        <li>Twitter</li>
-        <li>LinkedIn</li>
-        </ul>
-        <p>If You decide to register through or otherwise grant us access to a Third-Party Social Media Service, We may collect Personal data that is already associated with Your Third-Party Social Media Service's account, such as Your name, Your email address, Your activities or Your contact list associated with that account.</p>
-        <p>You may also have the option of sharing additional information with the Company through Your Third-Party Social Media Service's account. If You choose to provide such information and Personal Data, during registration or otherwise, You are giving the Company permission to use, share, and store it in a manner consistent with this Privacy Policy.</p>
         <h4 className="text-sm font-semibold">Information Collected while Using the Application</h4>
         <p>While using Our Application, in order to provide features of Our Application, We may collect, with Your prior permission:</p>
         <ul>
@@ -217,19 +206,19 @@ export default function PrivacyPolicy() {
         <h2 className="text-lg font-semibold">Contact Us</h2>
         <p>If you have any questions about this Privacy Policy, You can contact us:</p>
         <ul>
-        <li>By email: WeiJianZhen1@gmail.com</li>
+        <li>By GitHub Issues Page: <Link href="https://github.com/prince-ao/Scholr/issues" className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">https://github.com/prince-ao/Scholr/issues</Link></li>
         </ul>
       </div>
 
-      <div className="w-screen text-center bg-neutral-300">
+      <div className="w-screen mt-3 text-center bg-neutral-400 shadow-2xl">
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
-          <Link href="/about" prefetch={true}>
+          <Link href="/about" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             About
           </Link>
-          <Link href="/privacypolicy" prefetch={true}>
+          <Link href="/privacypolicy" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             Privacy Policy
           </Link>
-          <Link href="/termsofservice" prefetch={true}>
+          <Link href="/termsofservice" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             Terms of Service
           </Link>
         </div>

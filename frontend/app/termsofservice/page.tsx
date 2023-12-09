@@ -8,8 +8,8 @@ export const robotoSerif = Roboto_Serif({ subsets: ['latin'] });
 
 export default function TermsOfService() {
   return (
-    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh] overflow-x-hidden">
-      <nav className="flex items-center justify-center h-[75px]">
+    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh] bg-slate-300 overflow-x-hidden">
+      <nav className="flex items-center justify-center h-[75px] bg-slate-950 hover:bg-slate-900 shadow-2xl">
         <div className="w-[80%] flex items-center justify-between">
 
           {
@@ -21,15 +21,15 @@ export default function TermsOfService() {
           <Link href="/" prefetch={true}> 
             <div className="flex items-center gap-6">
               <Image
-                src="/ctp-logo-small.png"
+                src="/Scholr_Logo.png"
                 width={60}
                 height={60}
-                alt="Picture of the author"
+                alt="Scholr Logo"
                 className="rounded-md"
               />
 
               <h1 className={orbitron.className}>
-                <span className="text-7xl font-bold">Scholr</span>
+                <span className="text-7xl text-[#20C20E] font-bold">Scholr</span>
               </h1>
 
             </div>
@@ -140,17 +140,32 @@ export default function TermsOfService() {
             Any claim related to Scholr's Website shall be 
             governed by the laws of us without regards to its conflict of law provisions.
         </p>
+
+        <h2 className="text-lg font-semibold">10. Arbitration</h2>
+
+        <p>
+        Any dispute, controversy, or claim arising out of or relating to this Agreement
+        or the breach, termination, enforcement, interpretation, or validity thereof,
+        including the determination of the scope or applicability of this agreement to arbitrate, 
+        shall be determined by arbitration in New York City before one arbitrator. 
+        The arbitration shall be administered by JAMS pursuant to its Comprehensive Arbitration Rules and Procedures. 
+        Prior to initiating arbitration, the parties shall first attempt to resolve the dispute through good faith negotiations.
+        Judgment on the Award may be entered in any court having jurisdiction. 
+        This clause shall not preclude parties from seeking provisional remedies 
+        in aid of arbitration from a court of appropriate jurisdiction.
+        </p>
+
       </div>
 
-      <div className="w-[100vw] text-center bg-neutral-300">
+      <div className="w-[100vw] mt-3 text-center bg-neutral-400 shadow-2xl">
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
-          <Link href="/about" prefetch={true}>
+          <Link href="/about" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             About
           </Link>
-          <Link href="/privacypolicy" prefetch={true}>
+          <Link href="/privacypolicy" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             Privacy Policy
           </Link>
-          <Link href="/termsofservice" prefetch={true}>
+          <Link href="/termsofservice" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             Terms of Service
           </Link>
         </div>
