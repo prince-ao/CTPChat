@@ -67,7 +67,7 @@ export default function Signup() {
 
   return (
     <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 overflow-y-auto">
-      <Card className="bg-blue-200 w-[25%]">
+      <Card className="bg-blue-200 w-[26%]">
         <CardHeader className="pb-[40px]">
           <CardTitle>Sign up</CardTitle>
         </CardHeader>
@@ -182,7 +182,7 @@ export default function Signup() {
                       </FormControl>
                     
                       <FormLabel>
-                        I have read and agree the <Button variant="link" className="p-0 h-0">
+                        I have read and agree with the <Button variant="link" className="p-0 h-0">
                           <Link href="/privacypolicy">Privacy Policy</Link>
                           </Button>
                       </FormLabel>
@@ -212,7 +212,7 @@ export default function Signup() {
                     
                       <FormLabel>
                         I have read and agree with the <Button variant="link" className="p-0 h-0">
-                          <Link href="/termsofservice">Privacy Policy</Link>
+                          <Link href="/termsofservice">Terms of Service</Link>
                           </Button>
                       </FormLabel>
 
