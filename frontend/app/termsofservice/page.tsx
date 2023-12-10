@@ -8,7 +8,7 @@ export const robotoSerif = Roboto_Serif({ subsets: ['latin'] });
 
 export default function TermsOfService() {
   return (
-    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh] bg-slate-300 overflow-x-hidden">
+    <div className="flex flex-col items-stretch justify-between w-[100vw] h-[100vh] bg-slate-200 overflow-x-hidden">
       <nav className="flex items-center justify-center h-[75px] bg-slate-950 hover:bg-slate-900 shadow-2xl">
         <div className="w-[80%] flex items-center justify-between">
 
@@ -29,7 +29,7 @@ export default function TermsOfService() {
               />
 
               <h1 className={orbitron.className}>
-                <span className="text-7xl text-[#20C20E] font-bold">Scholr</span>
+                <span className="text-7xl text-white font-bold">Scholr</span>
               </h1>
 
             </div>
@@ -157,7 +157,7 @@ export default function TermsOfService() {
 
       </div>
 
-      <div className="w-[100vw] mt-3 text-center bg-neutral-400 shadow-2xl">
+      <div className="w-[100vw] mt-3 text-center bg-neutral-300 shadow-2xl">
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
           <Link href="/about" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             About

@@ -16,7 +16,7 @@ export const robotoSerif = Roboto_Serif({ subsets: ['latin'] });
 
 export default function About() {
   return (
-    <div className="flex flex-col items-stretch justify-between w-screen h-auto bg-slate-300"> {/* h-screen to make header and footer follow scroll */}
+    <div className="flex flex-col items-stretch justify-between w-screen h-auto bg-slate-200"> {/* h-screen to make header and footer follow scroll */}
       <nav className="flex items-center justify-center h-[75px] bg-slate-950 hover:bg-slate-900 shadow-2xl">
         <div className="w-[80%] flex items-center justify-between">
 
@@ -32,7 +32,7 @@ export default function About() {
               />
 
               <h1 className={orbitron.className}>
-                <span className="text-7xl text-[#20C20E] font-bold">Scholr</span>
+                <span className="text-7xl text-white font-bold">Scholr</span>
               </h1>
 
             </div>
@@ -204,7 +204,7 @@ export default function About() {
 
       </div>
 
-      <div className="w-screen mt-3 text-center bg-neutral-400 shadow-2xl">
+      <div className="w-screen mt-3 text-center bg-neutral-300 shadow-2xl">
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
           <Link href="/about" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
             About

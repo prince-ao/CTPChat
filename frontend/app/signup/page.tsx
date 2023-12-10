@@ -13,6 +13,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
@@ -25,6 +26,8 @@ const formSchema = z.object({
   password: z
     .string()
     .min(6, { message: "password length must be greater then 6" }),
+  privacypolicy: z.boolean().default(false).optional(),
+  termsofservice: z.boolean().default(false).optional(),
 });
 
 export default function Signup() {
@@ -63,15 +66,15 @@ export default function Signup() {
   }
 
   return (
-    <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700">
-      <Card className="bg-blue-200 w-[20%]">
+    <div className="flex items-center justify-center w-[100vw] h-[100vh] bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 overflow-y-auto">
+      <Card className="bg-blue-200 w-[25%]">
         <CardHeader className="pb-[40px]">
           <CardTitle>Sign up</CardTitle>
         </CardHeader>
         <CardContent>
           {error === "" ? <></> : <p className="text-red-600">{error}</p>}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4"> {/* Determines vetical margin for all form fields */}
               <FormField
                 control={form.control}
                 name="email"
@@ -146,7 +149,7 @@ export default function Signup() {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="p-0 m-0">
                     <FormLabel className="after:content-star after:text-red-600">
                       Password
                     </FormLabel>
@@ -162,9 +165,62 @@ export default function Signup() {
                 )}
               />
 
-              {/*
-                  Insert checkboxes for user to agree to privacy policy and terms of service
-              */}
+              <FormField
+                control={form.control}
+                name="privacypolicy"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="leading-none after:content-star after:text-red-600">
+
+                      <FormControl>
+                        <Checkbox  
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="mr-2 mt-1 p-0"
+                          required
+                        />
+                      </FormControl>
+                    
+                      <FormLabel>
+                        I have fully read the <Button variant="link" className="p-0 h-0">
+                          <Link href="/privacypolicy">Privacy Policy</Link>
+                          </Button>
+                      </FormLabel>
+
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="termsofservice"
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="leading-none after:content-star after:text-red-600">
+
+                      <FormControl>
+                        <Checkbox  
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="mr-2 mb-2 p-0"
+                          required
+                        />
+                      </FormControl>
+                    
+                      <FormLabel>
+                        I have fully read the <Button variant="link" className="p-0 h-0">
+                          <Link href="/termsofservice">Privacy Policy</Link>
+                          </Button>
+                      </FormLabel>
+
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <p className="!mt-2">
                 Have an account?{" "}

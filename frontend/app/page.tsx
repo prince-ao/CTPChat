@@ -22,7 +22,7 @@ export default function Home() {
 
   return (
     /* Div for whole body */
-    <div className="flex flex-col items-stretch justify-between w-screen h-screen bg-slate-300">
+    <div className="flex flex-col items-stretch justify-between w-screen h-screen bg-slate-200">
 
       {/* Div for navigation bar*/}
       <div className="flex flex-col items-stretch justify-between w-screen bg-slate-950 hover:bg-slate-900 shadow-2xl">
@@ -34,14 +34,14 @@ export default function Home() {
             <a href="/" className="flex gap-6">
               <Image
                 src="/Scholr_Logo.png"
-                width={60}
-                height={60}
+                width={70}
+                height={70}
                 alt="Scholr Logo"
                 className="rounded-md"
               />
 
               <h1 className={orbitron.className}>
-                <span className="text-7xl text-[#20C20E] font-bold">Scholr</span>
+                <span className="text-7xl text-white font-bold">Scholr</span>
               </h1>
             </a>
             
@@ -79,7 +79,7 @@ export default function Home() {
       Need to make all children divs be that way as well. 
       */
       }
-      <div className="w-screen mt-auto mb-auto fixed bottom-0 text-center bg-neutral-400 shadow-2xl">
+      <div className="w-screen mt-auto mb-auto fixed bottom-0 text-center bg-neutral-300 shadow-2xl">
 
         <div className="flex content-center justify-center space-x-3 underline decoration-solid">
           <Link href="/about" prefetch={true} className="text-[#0000EE] hover:text-[0404FF] visited:text-[#551A8B]">
