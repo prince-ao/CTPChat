@@ -182,7 +182,7 @@ export default function Signup() {
                       </FormControl>
                     
                       <FormLabel>
-                        I have fully read the <Button variant="link" className="p-0 h-0">
+                        I have read and agree the <Button variant="link" className="p-0 h-0">
                           <Link href="/privacypolicy">Privacy Policy</Link>
                           </Button>
                       </FormLabel>
@@ -211,7 +211,7 @@ export default function Signup() {
                       </FormControl>
                     
                       <FormLabel>
-                        I have fully read the <Button variant="link" className="p-0 h-0">
+                        I have read and agree with the <Button variant="link" className="p-0 h-0">
                           <Link href="/termsofservice">Privacy Policy</Link>
                           </Button>
                       </FormLabel>
